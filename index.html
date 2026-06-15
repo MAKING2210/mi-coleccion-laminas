@@ -1800,8 +1800,15 @@
             show('view-login')
             hide('loading')
           }
+          if (event === 'INITIAL_SESSION') {
+            if (session) {
+              await onLogin(session.user)
+            } else {
+              hide('loading')
+              show('view-login')
+            }
+          }
         })
-
         // Check session
         try {
           const {
