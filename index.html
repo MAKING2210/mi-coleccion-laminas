@@ -1790,9 +1790,8 @@
         }
 
         // Auth state listener
-        sb.auth.onAuthStateChange(async (event, session) => {
-          if (event === 'SIGNED_IN' && session) {
-            await onLogin(session.user)
+       sb.auth.onAuthStateChange(async(event,session)=>{
+    console.log('AUTH EVENT:', event, session?.user?.id);
           }
           if (event === 'SIGNED_OUT') {
             user = null
