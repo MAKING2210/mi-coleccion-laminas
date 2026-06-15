@@ -1,0 +1,2668 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Colección de Láminas</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+      :root {
+        --blue: #1a56a0;
+        --blue-l: #e6f1fb;
+        --blue-d: #0c3d78;
+        --gold: #c8960a;
+        --gold-l: #fff8e1;
+        --silver: #7b8fa1;
+        --silver-l: #eef2f5;
+        --holo-a: #7c3aed;
+        --holo-b: #0ea5e9;
+        --err: #d14040;
+        --green: #2e7d32;
+        --green-l: #eaf3de;
+        --amber: #ba7517;
+        --amber-l: #faeeda;
+        --bg: #f5f6f8;
+        --surf: #fff;
+        --bdr: rgba(0, 0, 0, 0.09);
+        --bdr-md: rgba(0, 0, 0, 0.16);
+        --txt: #161b26;
+        --muted: #6b7280;
+        --lt: #9ca3af;
+        --r: 10px;
+        --rl: 14px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--txt);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+      .nav {
+        background: var(--surf);
+        border-bottom: 1px solid var(--bdr);
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 54px;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .nav-logo {
+        width: 30px;
+        height: 30px;
+        background: var(--blue);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .nav-logo svg {
+        width: 17px;
+        height: 17px;
+        fill: none;
+        stroke: #fff;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+      .nav-title {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-user {
+        font-size: 12px;
+        color: var(--muted);
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 13px;
+        border-radius: var(--r);
+        border: 1px solid var(--bdr-md);
+        background: var(--surf);
+        color: var(--txt);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.13s;
+        font-family: inherit;
+        white-space: nowrap;
+      }
+      .btn:hover {
+        background: var(--bg);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--blue-d);
+      }
+      .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
+      .btn-danger {
+        background: #fff0f0;
+        color: var(--err);
+        border-color: rgba(209, 64, 64, 0.3);
+      }
+      .btn-danger:hover {
+        background: #ffe0e0;
+      }
+      .wrap {
+        max-width: 740px;
+        margin: 0 auto;
+        padding: 1.25rem 1rem;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .login-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .login-card {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--rl);
+        padding: 2.5rem 2rem;
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+      }
+      .login-logo {
+        width: 56px;
+        height: 56px;
+        background: var(--blue);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.25rem;
+      }
+      .login-logo svg {
+        width: 30px;
+        height: 30px;
+        fill: none;
+        stroke: #fff;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+      .login-card h1 {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
+      }
+      .login-card p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 2rem;
+        line-height: 1.5;
+      }
+      .btn-github {
+        background: #24292e;
+        border-color: #24292e;
+        color: #fff;
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        font-size: 14px;
+        border-radius: var(--r);
+      }
+      .btn-github:hover {
+        background: #1a1f24;
+      }
+      .btn-github svg {
+        width: 20px;
+        height: 20px;
+        fill: #fff;
+        flex-shrink: 0;
+      }
+      .login-note {
+        font-size: 11px;
+        color: var(--lt);
+        margin-top: 1.25rem;
+        line-height: 1.5;
+      }
+      .home-top {
+        margin-bottom: 1.25rem;
+      }
+      .home-top h2 {
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .home-top p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin-bottom: 1rem;
+      }
+      .sc {
+        background: var(--surf);
+        border-radius: var(--r);
+        border: 1px solid var(--bdr);
+        padding: 13px;
+        text-align: center;
+      }
+      .sc-n {
+        font-size: 25px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .sc-l {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 1px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .gbar {
+        height: 6px;
+        background: var(--bdr);
+        border-radius: 3px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+      .gbar-f {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--holo-b));
+        border-radius: 3px;
+        transition: width 0.5s;
+      }
+      .sec-hdr {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .albums-list {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .al-card {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--rl);
+        padding: 12px 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        transition: all 0.13s;
+      }
+      .al-card:hover {
+        border-color: rgba(26, 86, 160, 0.35);
+        box-shadow: 0 2px 10px rgba(26, 86, 160, 0.08);
+      }
+      .al-cover {
+        width: 46px;
+        height: 58px;
+        border-radius: 7px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid var(--bdr);
+      }
+      .al-cover-ph {
+        width: 46px;
+        height: 58px;
+        border-radius: 7px;
+        flex-shrink: 0;
+        border: 1px solid var(--bdr);
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--lt);
+        font-size: 20px;
+      }
+      .al-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .al-name {
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .al-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .al-pct {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--blue);
+        flex-shrink: 0;
+      }
+      .minibar {
+        height: 3px;
+        background: var(--bg);
+        border-radius: 2px;
+        margin-top: 5px;
+        overflow: hidden;
+      }
+      .minibar-f {
+        height: 100%;
+        background: var(--blue);
+        border-radius: 2px;
+      }
+      .empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--muted);
+      }
+      .empty svg {
+        margin: 0 auto 1rem;
+        display: block;
+        opacity: 0.25;
+      }
+      .empty h3 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--txt);
+      }
+      .ah {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--rl);
+        padding: 14px;
+        margin-bottom: 1.1rem;
+      }
+      .ah-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .ah-cover {
+        width: 64px;
+        height: 80px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid var(--bdr);
+        flex-shrink: 0;
+      }
+      .ah-cover-ph {
+        width: 64px;
+        height: 80px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        border: 1px solid var(--bdr);
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--lt);
+        font-size: 28px;
+      }
+      .ah-meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .ah-meta h2 {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .ah-meta p {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .ah-btns {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .prog-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 13px;
+      }
+      .prog-t {
+        flex: 1;
+        height: 7px;
+        background: var(--bg);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .prog-f {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--blue), var(--holo-b));
+        transition: width 0.5s;
+      }
+      .prog-pct {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--blue);
+        min-width: 36px;
+        text-align: right;
+      }
+      .ms-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 7px;
+        margin-top: 11px;
+      }
+      .msc {
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 8px;
+        text-align: center;
+      }
+      .msc-n {
+        font-size: 16px;
+        font-weight: 800;
+      }
+      .msc-l {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .album-tabs {
+        display: flex;
+        border: 1px solid var(--bdr);
+        border-radius: var(--r);
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .album-tab {
+        flex: 1;
+        padding: 9px;
+        border: none;
+        background: var(--surf);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+        color: var(--muted);
+        transition: all 0.13s;
+        border-right: 1px solid var(--bdr);
+      }
+      .album-tab:last-child {
+        border-right: none;
+      }
+      .album-tab.on {
+        background: var(--blue);
+        color: #fff;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 11px;
+        flex-wrap: wrap;
+      }
+      .filters {
+        display: flex;
+        gap: 5px;
+        flex: 1;
+        flex-wrap: wrap;
+      }
+      .pill {
+        padding: 5px 11px;
+        border-radius: 20px;
+        border: 1px solid var(--bdr);
+        background: var(--surf);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.13s;
+        font-family: inherit;
+      }
+      .pill.on {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+      .vtoggle {
+        display: flex;
+        border: 1px solid var(--bdr);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .vtoggle button {
+        padding: 6px 10px;
+        border: none;
+        background: var(--surf);
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 14px;
+        transition: all 0.13s;
+      }
+      .vtoggle button.on {
+        background: var(--blue-l);
+        color: var(--blue);
+      }
+      .legend {
+        display: flex;
+        gap: 11px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .leg-i {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .leg-d {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        border: 1.5px solid;
+      }
+      .sg {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+        gap: 5px;
+        margin-bottom: 0.5rem;
+      }
+      .sg.list {
+        grid-template-columns: 1fr;
+      }
+      .lam {
+        width: 56px;
+        height: 68px;
+        border-radius: 8px;
+        border: 1.5px solid var(--bdr);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.11s;
+        position: relative;
+        background: var(--surf);
+        gap: 2px;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .lam:hover {
+        transform: scale(1.07);
+        z-index: 2;
+      }
+      .lam-num {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--muted);
+        line-height: 1;
+      }
+      .lam-ico {
+        font-size: 14px;
+        line-height: 1;
+      }
+      .ls-have {
+        background: var(--green-l);
+        border-color: #639922;
+      }
+      .ls-have .lam-num {
+        color: #2e7d32;
+      }
+      .ls-rep {
+        background: var(--amber-l);
+        border-color: var(--amber);
+      }
+      .ls-rep .lam-num {
+        color: var(--amber);
+      }
+      .lt-holo {
+        background: linear-gradient(135deg, #f0e6ff, #e0f2fe);
+        border-color: var(--holo-a);
+      }
+      .lt-holo .lam-num {
+        color: var(--holo-a);
+      }
+      .lt-gold {
+        background: linear-gradient(135deg, #fffde7, #fff8e1);
+        border-color: var(--gold);
+      }
+      .lt-gold .lam-num {
+        color: var(--gold);
+      }
+      .lt-silver {
+        background: var(--silver-l);
+        border-color: var(--silver);
+      }
+      .lt-silver .lam-num {
+        color: var(--silver);
+      }
+      .lt-err {
+        background: #fff0f0;
+        border-color: var(--err);
+      }
+      .lt-err .lam-num {
+        color: var(--err);
+      }
+      .lbadge {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 7px;
+        font-weight: 700;
+        padding: 1px 3px;
+        border-radius: 3px;
+        color: #fff;
+      }
+      .lbadge-ok {
+        background: #639922;
+      }
+      .lbadge-rep {
+        background: var(--amber);
+      }
+      .list-row {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 9px 13px;
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r);
+        cursor: pointer;
+        transition: all 0.12s;
+        margin-bottom: 4px;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .list-row:hover {
+        border-color: rgba(26, 86, 160, 0.4);
+      }
+      .list-num {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        min-width: 36px;
+      }
+      .list-name {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .list-type-badge {
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+      @keyframes lam-pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(0.88);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .lam-pulse {
+        animation: lam-pulse 0.18s ease;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 200;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 1rem;
+        overflow-y: auto;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--surf);
+        border-radius: var(--rl);
+        padding: 1.4rem;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        margin: auto;
+      }
+      .modal h2 {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        letter-spacing: -0.01em;
+      }
+      .field {
+        margin-bottom: 13px;
+      }
+      .field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid var(--bdr-md);
+        border-radius: var(--r);
+        font-size: 14px;
+        font-family: inherit;
+        color: var(--txt);
+        background: var(--surf);
+        outline: none;
+        transition: border-color 0.14s;
+      }
+      .field input:focus {
+        border-color: var(--blue);
+      }
+      .field textarea {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid var(--bdr-md);
+        border-radius: var(--r);
+        font-size: 14px;
+        font-family: inherit;
+        color: var(--txt);
+        background: var(--surf);
+        outline: none;
+        resize: vertical;
+        min-height: 56px;
+      }
+      .field textarea:focus {
+        border-color: var(--blue);
+      }
+      .mactions {
+        display: flex;
+        gap: 7px;
+        justify-content: flex-end;
+        margin-top: 1.2rem;
+      }
+      .cover-up {
+        border: 2px dashed var(--bdr-md);
+        border-radius: var(--rl);
+        padding: 1.2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.14s;
+        position: relative;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .cover-up:hover {
+        border-color: var(--blue);
+        background: var(--blue-l);
+      }
+      .cover-up input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+      }
+      .cover-up img {
+        width: 100%;
+        max-height: 140px;
+        object-fit: contain;
+        border-radius: 8px;
+        display: none;
+      }
+      .cover-up-hint {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .cover-up-hint strong {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 4px;
+        color: var(--lt);
+      }
+      .num-toggle {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 5px;
+      }
+      .num-opt {
+        padding: 11px 8px;
+        border-radius: 10px;
+        border: 1.5px solid var(--bdr);
+        background: var(--surf);
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.13s;
+        font-family: inherit;
+      }
+      .num-opt:hover {
+        border-color: var(--blue);
+      }
+      .num-opt.sel {
+        border-color: var(--blue);
+        border-width: 2px;
+        background: var(--blue-l);
+      }
+      .num-opt-ico {
+        font-size: 20px;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .num-opt-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--txt);
+      }
+      .num-opt-ex {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 13px;
+        background: var(--bg);
+        border-radius: var(--r);
+        border: 1px solid var(--bdr);
+        cursor: pointer;
+      }
+      .toggle-row-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--txt);
+      }
+      .toggle-row-sub {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .toggle-switch {
+        width: 40px;
+        height: 22px;
+        border-radius: 11px;
+        background: var(--bdr-md);
+        position: relative;
+        transition: background 0.2s;
+        flex-shrink: 0;
+      }
+      .toggle-switch.on {
+        background: var(--blue);
+      }
+      .toggle-switch::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        top: 3px;
+        left: 3px;
+        transition: transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      .toggle-switch.on::after {
+        transform: translateX(18px);
+      }
+      .especiales-box {
+        border: 1px solid var(--bdr);
+        border-radius: var(--rl);
+        padding: 13px;
+        margin-top: 10px;
+        display: none;
+        background: linear-gradient(135deg, #f8f0ff, #eff8ff);
+      }
+      .especiales-box.show {
+        display: block;
+      }
+      .especiales-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--holo-a);
+        margin-bottom: 12px;
+      }
+      .confirm-modal {
+        max-width: 340px;
+        text-align: center;
+      }
+      .confirm-modal p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 1.2rem;
+        line-height: 1.5;
+      }
+      .qr-modal {
+        max-width: 360px;
+      }
+      .qr-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 1rem 0;
+      }
+      .qr-wrap canvas {
+        border-radius: 8px !important;
+      }
+      .link-box {
+        background: var(--bg);
+        border: 1px solid var(--bdr);
+        border-radius: var(--r);
+        padding: 9px 11px;
+        font-size: 11px;
+        color: var(--muted);
+        word-break: break-all;
+        margin-bottom: 10px;
+        cursor: pointer;
+      }
+      .qr-note {
+        background: var(--blue-l);
+        border-radius: var(--r);
+        padding: 11px;
+        font-size: 12px;
+        color: var(--blue-d);
+      }
+      .pub-hero {
+        background: linear-gradient(135deg, var(--blue), var(--blue-d));
+        color: #fff;
+        border-radius: var(--rl);
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .pub-cover-ph {
+        width: 64px;
+        height: 80px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+      }
+      .pub-info h2 {
+        font-size: 19px;
+        font-weight: 700;
+      }
+      .pub-info p {
+        font-size: 13px;
+        opacity: 0.85;
+        margin-top: 4px;
+      }
+      .chips-box {
+        background: var(--surf);
+        border: 1px solid var(--bdr);
+        border-radius: var(--rl);
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+      .chips-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        background: var(--bg);
+        border: 1px solid var(--bdr);
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--txt);
+      }
+      .sync-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        display: inline-block;
+      }
+      .sync-dot.syncing {
+        background: var(--amber);
+        animation: pulse 1s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .toast {
+        position: fixed;
+        bottom: 1.4rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(16px);
+        background: #161b26;
+        color: #fff;
+        padding: 9px 17px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0;
+        transition: all 0.22s;
+        z-index: 400;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .loading {
+        position: fixed;
+        inset: 0;
+        background: var(--surf);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+      }
+      .loading.hide {
+        display: none;
+      }
+      .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--bdr);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 480px) {
+        .ms-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .sg {
+          grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        }
+        .lam {
+          width: 50px;
+          height: 62px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading" id="loading"><div class="spinner"></div></div>
+
+    <div id="view-login" class="login-wrap" style="display: none">
+      <div class="login-card">
+        <div class="login-logo">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M7 8h10M7 12h10M7 16h6" />
+          </svg>
+        </div>
+        <h1>Mi Colección</h1>
+        <p>Organizá tus álbumes de láminas y compartí lo que te falta.</p>
+        <button class="btn btn-github" onclick="loginGitHub()">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+            />
+          </svg>
+          Entrar con GitHub
+        </button>
+        <p class="login-note">
+          Tus datos se guardan en la nube y podés acceder desde cualquier
+          dispositivo.
+        </p>
+      </div>
+    </div>
+
+    <div id="app" style="display: none">
+      <nav class="nav">
+        <div class="nav-brand">
+          <div class="nav-logo">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M7 8h10M7 12h10M7 16h6" />
+            </svg>
+          </div>
+          <span class="nav-title">Mi Colección</span>
+        </div>
+        <div class="nav-right">
+          <span class="sync-dot" id="sync-dot" title="Sincronizado"></span>
+          <span class="nav-user" id="nav-user"></span>
+          <button
+            class="btn btn-sm"
+            id="nav-back"
+            style="display: none"
+            onclick="goHome()"
+          >
+            ← Inicio
+          </button>
+          <button
+            class="btn btn-sm btn-primary"
+            id="btn-new"
+            onclick="openNewModal()"
+          >
+            + Álbum
+          </button>
+          <button class="btn btn-sm" onclick="logout()">↩</button>
+        </div>
+      </nav>
+
+      <div id="view-home" class="view active">
+        <div class="wrap">
+          <div class="home-top">
+            <h2 id="greeting">Mis álbumes</h2>
+            <p>Tu colección personal</p>
+          </div>
+          <div class="stats-row">
+            <div class="sc">
+              <div class="sc-n" id="gs-a">0</div>
+              <div class="sc-l">Álbumes</div>
+            </div>
+            <div class="sc">
+              <div class="sc-n" id="gs-h">0</div>
+              <div class="sc-l">Tengo</div>
+            </div>
+            <div class="sc">
+              <div class="sc-n" id="gs-m">0</div>
+              <div class="sc-l">Faltan</div>
+            </div>
+          </div>
+          <div class="gbar">
+            <div class="gbar-f" id="gbar" style="width: 0%"></div>
+          </div>
+          <div class="sec-hdr">Álbumes</div>
+          <div class="albums-list" id="albums-list"></div>
+        </div>
+      </div>
+
+      <div id="view-album" class="view">
+        <div class="wrap">
+          <div class="ah">
+            <div class="ah-top">
+              <div id="ah-cover-wrap"></div>
+              <div class="ah-meta">
+                <h2 id="ah-name">—</h2>
+                <p id="ah-sub">—</p>
+                <div class="ah-btns">
+                  <button class="btn btn-sm" onclick="openQRModal()">
+                    📤 QR
+                  </button>
+                  <button class="btn btn-sm" onclick="openEditModal()">
+                    ✏️ Editar
+                  </button>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    onclick="openConfirmDelete()"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="prog-row">
+              <div class="prog-t">
+                <div class="prog-f" id="ah-bar" style="width: 0%"></div>
+              </div>
+              <div class="prog-pct" id="ah-pct">0%</div>
+            </div>
+            <div class="ms-grid">
+              <div class="msc">
+                <div class="msc-n" id="ms-h" style="color: #2e7d32">0</div>
+                <div class="msc-l">Tengo</div>
+              </div>
+              <div class="msc">
+                <div class="msc-n" id="ms-m" style="color: var(--blue)">0</div>
+                <div class="msc-l">Faltan</div>
+              </div>
+              <div class="msc">
+                <div class="msc-n" id="ms-r" style="color: var(--amber)">0</div>
+                <div class="msc-l">Repetidas</div>
+              </div>
+              <div class="msc">
+                <div class="msc-n" id="ms-s" style="color: var(--holo-a)">
+                  0
+                </div>
+                <div class="msc-l">Especiales</div>
+              </div>
+            </div>
+          </div>
+          <div id="album-tabs-wrap" style="display: none">
+            <div class="album-tabs">
+              <button
+                class="album-tab on"
+                id="tab-normal"
+                onclick="setAlbumTab('normal')"
+              >
+                Láminas normales
+              </button>
+              <button
+                class="album-tab"
+                id="tab-special"
+                onclick="setAlbumTab('special')"
+              >
+                ✨ Especiales
+              </button>
+            </div>
+          </div>
+          <div id="sec-normal">
+            <div class="toolbar">
+              <div class="filters">
+                <button
+                  class="pill on"
+                  onclick="setFilter('all', this, 'normal')"
+                >
+                  Todas
+                </button>
+                <button
+                  class="pill"
+                  onclick="setFilter('missing', this, 'normal')"
+                >
+                  Faltan
+                </button>
+                <button
+                  class="pill"
+                  onclick="setFilter('have', this, 'normal')"
+                >
+                  Tengo
+                </button>
+                <button
+                  class="pill"
+                  onclick="setFilter('repeated', this, 'normal')"
+                >
+                  Repetidas
+                </button>
+              </div>
+              <div class="vtoggle">
+                <button id="vt-g" class="on" onclick="setVM('grid')">▦</button
+                ><button id="vt-l" onclick="setVM('list')">≡</button>
+              </div>
+            </div>
+            <div class="legend">
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="background: var(--green-l); border-color: #639922"
+                ></div>
+                Tengo
+              </div>
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="background: var(--amber-l); border-color: var(--amber)"
+                ></div>
+                Repetida
+              </div>
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="background: var(--bg); border-color: var(--bdr-md)"
+                ></div>
+                Falta
+              </div>
+            </div>
+            <div id="sg-normal" class="sg"></div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--lt);
+                text-align: center;
+                margin-top: 4px;
+              "
+            >
+              Toque = cambiar estado · Toque largo = nota
+            </p>
+          </div>
+          <div id="sec-special" style="display: none">
+            <div class="toolbar">
+              <div class="filters">
+                <button
+                  class="pill on"
+                  onclick="setFilter('all', this, 'special')"
+                >
+                  Todas
+                </button>
+                <button
+                  class="pill"
+                  onclick="setFilter('missing', this, 'special')"
+                >
+                  Faltan
+                </button>
+                <button
+                  class="pill"
+                  onclick="setFilter('have', this, 'special')"
+                >
+                  Tengo
+                </button>
+                <button
+                  class="pill"
+                  onclick="setFilter('repeated', this, 'special')"
+                >
+                  Repetidas
+                </button>
+              </div>
+            </div>
+            <div class="legend">
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="
+                    background: linear-gradient(135deg, #f0e6ff, #e0f2fe);
+                    border-color: var(--holo-a);
+                  "
+                ></div>
+                ✨ Holo
+              </div>
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="
+                    background: linear-gradient(135deg, #fffde7, #fff8e1);
+                    border-color: var(--gold);
+                  "
+                ></div>
+                🥇 Dorada
+              </div>
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="
+                    background: var(--silver-l);
+                    border-color: var(--silver);
+                  "
+                ></div>
+                🥈 Plateada
+              </div>
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="background: #fff0f0; border-color: var(--err)"
+                ></div>
+                ⚠️ Error
+              </div>
+              <div class="leg-i">
+                <div
+                  class="leg-d"
+                  style="background: var(--green-l); border-color: #639922"
+                ></div>
+                Tengo
+              </div>
+            </div>
+            <div id="sg-special" class="sg"></div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--lt);
+                text-align: center;
+                margin-top: 4px;
+              "
+            >
+              Toque = cambiar estado · Toque largo = nota
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-public" class="view">
+        <div class="wrap">
+          <div class="pub-hero">
+            <div class="pub-cover-ph">📚</div>
+            <div class="pub-info">
+              <h2 id="pub-title">—</h2>
+              <p id="pub-sub">—</p>
+            </div>
+          </div>
+          <div id="pub-missing"></div>
+          <div id="pub-sp-missing"></div>
+          <div id="pub-repeated"></div>
+          <p
+            style="
+              text-align: center;
+              margin-top: 2rem;
+              font-size: 12px;
+              color: var(--muted);
+            "
+          >
+            Mi Colección de Láminas
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODALS -->
+    <div class="overlay" id="modal-new">
+      <div class="modal">
+        <h2>Nuevo álbum</h2>
+        <div class="field">
+          <label>Imagen de tapa</label>
+          <div class="cover-up">
+            <input
+              type="file"
+              accept="image/*"
+              id="cover-input"
+              onchange="previewCover(this, 'cover-prev', 'cover-hint')"
+            /><img id="cover-prev" alt="" />
+            <div id="cover-hint" class="cover-up-hint">
+              <strong>📷</strong>Subir imagen de tapa
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Nombre del álbum</label
+          ><input id="inp-name" placeholder="Ej: Dragon Ball, FIFA 2026..." />
+        </div>
+        <div class="field">
+          <label>Láminas normales — numeración</label>
+          <div class="num-toggle" id="fmt-normal-toggle">
+            <button
+              class="num-opt sel"
+              data-fmt="number"
+              onclick="selFmt(this, 'normal')"
+            >
+              <span class="num-opt-ico">1 2 3</span>
+              <div class="num-opt-name">Números</div>
+              <div class="num-opt-ex">1, 2, 3...</div>
+            </button>
+            <button
+              class="num-opt"
+              data-fmt="letter"
+              onclick="selFmt(this, 'normal')"
+            >
+              <span class="num-opt-ico">A B C</span>
+              <div class="num-opt-name">Letras</div>
+              <div class="num-opt-ex">A, B, C...</div>
+            </button>
+          </div>
+        </div>
+        <div class="field" id="f-total">
+          <label>Cantidad de láminas</label
+          ><input
+            id="inp-total"
+            type="number"
+            placeholder="Ej: 200"
+            min="1"
+            max="3000"
+          />
+        </div>
+        <div class="field" id="f-letters" style="display: none">
+          <label>Letras (separadas por coma)</label
+          ><input id="inp-letters" placeholder="Ej: A, B, C, D..." />
+        </div>
+        <div class="field">
+          <div class="toggle-row" onclick="toggleEsp()">
+            <div>
+              <div class="toggle-row-label">✨ ¿Tiene láminas especiales?</div>
+              <div class="toggle-row-sub">
+                Holográficas, doradas, plateadas...
+              </div>
+            </div>
+            <div class="toggle-switch" id="esp-sw"></div>
+          </div>
+          <div class="especiales-box" id="esp-box">
+            <div class="especiales-title">✨ Láminas especiales</div>
+            <div class="field">
+              <label>Numeración de especiales</label>
+              <div class="num-toggle" id="fmt-special-toggle">
+                <button
+                  class="num-opt sel"
+                  data-fmt="number"
+                  onclick="selFmt(this, 'special')"
+                >
+                  <span class="num-opt-ico">1 2 3</span>
+                  <div class="num-opt-name">Números</div>
+                  <div class="num-opt-ex">SP1, SP2...</div>
+                </button>
+                <button
+                  class="num-opt"
+                  data-fmt="letter"
+                  onclick="selFmt(this, 'special')"
+                >
+                  <span class="num-opt-ico">A B C</span>
+                  <div class="num-opt-name">Letras</div>
+                  <div class="num-opt-ex">A, B, C...</div>
+                </button>
+              </div>
+            </div>
+            <div class="field" id="f-sp-total">
+              <label>Cantidad de especiales</label
+              ><input
+                id="inp-sp-total"
+                type="number"
+                placeholder="Ej: 20"
+                min="1"
+                max="500"
+              />
+            </div>
+            <div class="field" id="f-sp-letters" style="display: none">
+              <label>Letras de las especiales</label
+              ><input id="inp-sp-letters" placeholder="Ej: A, B, C, D" />
+            </div>
+          </div>
+        </div>
+        <div class="mactions">
+          <button class="btn" onclick="closeModal('modal-new')">Cancelar</button
+          ><button class="btn btn-primary" onclick="createAlbum()">
+            Crear álbum
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-edit">
+      <div class="modal">
+        <h2>Editar álbum</h2>
+        <div class="field">
+          <label>Imagen de tapa</label>
+          <div class="cover-up">
+            <input
+              type="file"
+              accept="image/*"
+              id="edit-cover-input"
+              onchange="previewCover(this, 'edit-prev', 'edit-hint')"
+            /><img id="edit-prev" alt="" />
+            <div id="edit-hint" class="cover-up-hint">
+              <strong>📷</strong>Cambiar imagen
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Nombre</label><input id="edit-name" /><button
+            class="btn btn-sm btn-primary"
+            onclick="saveEditName()"
+            style="margin-top: 6px; width: 100%"
+          >
+            Guardar nombre e imagen
+          </button>
+        </div>
+        <div style="border-top: 1px solid var(--bdr); margin: 14px 0"></div>
+        <p style="font-size: 13px; font-weight: 700; margin-bottom: 10px">
+          Láminas normales
+        </p>
+        <div class="field">
+          <div style="display: flex; gap: 8px; margin-bottom: 5px">
+            <input
+              id="edit-add-n"
+              type="number"
+              placeholder="Cantidad"
+              min="1"
+              style="flex: 1"
+            /><button class="btn btn-sm btn-primary" onclick="addN()">
+              + Agregar</button
+            ><button class="btn btn-sm btn-danger" onclick="removeN()">
+              − Borrar
+            </button>
+          </div>
+          <p id="info-n" style="font-size: 11px; color: var(--muted)">—</p>
+        </div>
+        <div id="edit-sp-wrap" style="display: none">
+          <div style="border-top: 1px solid var(--bdr); margin: 14px 0"></div>
+          <p style="font-size: 13px; font-weight: 700; margin-bottom: 6px">
+            Láminas especiales
+          </p>
+          <p
+            id="info-sp-fmt"
+            style="font-size: 12px; color: var(--muted); margin-bottom: 8px"
+          >
+            —
+          </p>
+          <div class="field">
+            <label>Cambiar numeración</label>
+            <div class="num-toggle" id="edit-sp-fmt">
+              <button
+                class="num-opt"
+                data-fmt="number"
+                onclick="changeSpFmt(this)"
+              >
+                <span class="num-opt-ico">1 2 3</span>
+                <div class="num-opt-name">Números</div>
+              </button>
+              <button
+                class="num-opt"
+                data-fmt="letter"
+                onclick="changeSpFmt(this)"
+              >
+                <span class="num-opt-ico">A B C</span>
+                <div class="num-opt-name">Letras</div>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <div style="display: flex; gap: 8px; margin-bottom: 5px">
+              <input
+                id="edit-add-sp"
+                type="number"
+                placeholder="Cantidad"
+                min="1"
+                style="flex: 1"
+              /><button class="btn btn-sm btn-primary" onclick="addSp()">
+                + Agregar</button
+              ><button class="btn btn-sm btn-danger" onclick="removeSp()">
+                − Borrar
+              </button>
+            </div>
+            <p id="info-sp" style="font-size: 11px; color: var(--muted)">—</p>
+          </div>
+        </div>
+        <div class="mactions">
+          <button class="btn" onclick="closeModal('modal-edit')">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-del">
+      <div class="modal confirm-modal">
+        <h2>¿Eliminar álbum?</h2>
+        <p id="del-msg">Esta acción no se puede deshacer.</p>
+        <div style="display: flex; gap: 8px; justify-content: center">
+          <button class="btn" onclick="closeModal('modal-del')">Cancelar</button
+          ><button class="btn btn-danger" onclick="doDelete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-note">
+      <div class="modal" style="max-width: 340px">
+        <h2 style="font-size: 15px">Nota — <span id="note-id">—</span></h2>
+        <p
+          style="font-size: 12px; color: var(--muted); margin-bottom: 10px"
+          id="note-info"
+        >
+          —
+        </p>
+        <div class="field">
+          <textarea
+            id="note-txt"
+            placeholder="Ej: le falta la firma..."
+            style="min-height: 70px"
+          ></textarea>
+        </div>
+        <div class="mactions">
+          <button class="btn" onclick="closeModal('modal-note')">
+            Cancelar</button
+          ><button class="btn btn-primary" onclick="saveNote()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="modal-qr">
+      <div class="modal qr-modal">
+        <h2>Compartir 📤</h2>
+        <p style="font-size: 13px; color: var(--muted)" id="qr-sub">—</p>
+        <div class="qr-wrap" id="qr-wrap"></div>
+        <div class="link-box" id="qr-link" onclick="copyLink()">—</div>
+        <div class="qr-note" id="qr-note">—</div>
+        <div
+          style="
+            display: flex;
+            gap: 7px;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+          "
+        >
+          <button class="btn btn-sm" onclick="copyLink()">
+            📋 Copiar link
+          </button>
+          <button class="btn btn-sm" onclick="shareWA()">💬 WhatsApp</button>
+          <button
+            class="btn btn-sm btn-primary"
+            onclick="closeModal('modal-qr')"
+          >
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      // ── SUPABASE ───────────────────────────────────────────────────────────────
+      const SURL = 'https://skkcppfiihleubnntdnk.supabase.co'
+      const SKEY =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNra2NwcGZpaWhsZXVibm50ZG5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzOTQyMzgsImV4cCI6MjA5Njk3MDIzOH0.BI3rwB34gBWALvhsszGn3OUwn7zbF3iMO7t9xXorJy4'
+      const sb = window.supabase.createClient(SURL, SKEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storageKey: 'mc-auth-v1',
+        },
+      })
+
+      // ── STATE ──────────────────────────────────────────────────────────────────
+      let user = null,
+        albums = [],
+        aid = null
+      let filN = 'all',
+        filSp = 'all',
+        vm = 'grid',
+        tab = 'normal'
+      let editLam = null,
+        editSec = null,
+        newCover = null,
+        editCover = null
+      let fmtN = 'number',
+        fmtSp = 'number',
+        hasEsp = false
+      let _pt = null,
+        _st = null
+
+      // ── INIT ───────────────────────────────────────────────────────────────────
+      ;(async function init() {
+        // Public share view
+        const share = new URLSearchParams(location.search).get('share')
+        if (share) {
+          hide('loading')
+          show('app')
+          try {
+            renderPublic(JSON.parse(decodeURIComponent(escape(atob(share)))))
+            showView('public')
+          } catch (e) {
+            showView('view-home')
+          }
+          return
+        }
+
+        // Auth state listener
+        sb.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' && session) {
+            await onLogin(session.user)
+          }
+          if (event === 'SIGNED_OUT') {
+            user = null
+            hide('app')
+            show('view-login')
+            hide('loading')
+          }
+        })
+
+        // Check session
+        try {
+          const {
+            data: { session },
+          } = await sb.auth.getSession()
+          if (session) {
+            await onLogin(session.user)
+          } else {
+            hide('loading')
+            show('view-login')
+          }
+        } catch (e) {
+          console.error(e)
+          hide('loading')
+          show('view-login')
+        }
+      })()
+
+      async function onLogin(u) {
+        if (user && user.id === u.id) return // evita doble llamada
+        user = u
+        el('nav-user').textContent = u.user_metadata?.user_name || u.email || ''
+        el('greeting').textContent =
+          'Hola ' +
+          (u.user_metadata?.user_name || u.email || '').split(' ')[0] +
+          ' 👋'
+        hide('view-login')
+        hide('loading')
+        show('app')
+        await loadAlbums()
+      }
+      async function loginGitHub() {
+        await sb.auth.signInWithOAuth({
+          provider: 'github',
+          options: { redirectTo: location.origin + location.pathname },
+        })
+      }
+      async function logout() {
+        await sb.auth.signOut()
+      }
+
+      // ── HELPERS ────────────────────────────────────────────────────────────────
+      const el = (id) => document.getElementById(id)
+      function show(id) {
+        const e = el(id)
+        if (e) e.style.display = ''
+      }
+      function hide(id) {
+        const e = el(id)
+        if (e) e.style.display = 'none'
+      }
+      function toast(m, d = 1800) {
+        const e = el('toast')
+        e.textContent = m
+        e.classList.add('show')
+        setTimeout(() => e.classList.remove('show'), d)
+      }
+      function closeModal(id) {
+        el(id).classList.remove('open')
+      }
+      function openModal(id) {
+        el(id).classList.add('open')
+      }
+      function showView(id) {
+        document
+          .querySelectorAll('#app .view')
+          .forEach((v) => v.classList.remove('active'))
+        el(id).classList.add('active')
+        el('nav-back').style.display =
+          id === 'view-home' ? 'none' : 'inline-flex'
+        el('btn-new').style.display =
+          id === 'view-home' ? 'inline-flex' : 'none'
+      }
+      function goHome() {
+        aid = null
+        renderHome()
+        showView('view-home')
+      }
+      function setSyncing(v) {
+        el('sync-dot').classList.toggle('syncing', v)
+      }
+      function alb() {
+        return albums.find((a) => a.id === aid)
+      }
+
+      // ── DB ─────────────────────────────────────────────────────────────────────
+      function dbMap(a) {
+        return {
+          id: a.id,
+          name: a.name,
+          cover: a.cover || null,
+          fmtNormal: a.fmt_normal || 'number',
+          fmtSpecial: a.fmt_special || null,
+          normalIds: a.normal_ids || [],
+          specialIds: a.special_ids || [],
+          hasSpecial: a.has_special || false,
+          defaultSpType: a.default_sp_type || 'holo',
+          stickers: a.stickers || {},
+        }
+      }
+
+      async function loadAlbums() {
+        setSyncing(true)
+        const { data, error } = await sb
+          .from('albums')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at')
+        setSyncing(false)
+        if (error) {
+          toast('Error cargando')
+          console.error(error)
+          return
+        }
+        albums = (data || []).map(dbMap)
+        renderHome()
+        showView('view-home')
+      }
+
+      async function dbSave(a) {
+        setSyncing(true)
+        const { error } = await sb.from('albums').upsert({
+          id: a.id,
+          user_id: user.id,
+          name: a.name,
+          fmt_normal: a.fmtNormal,
+          fmt_special: a.fmtSpecial || null,
+          normal_ids: a.normalIds,
+          special_ids: a.specialIds || [],
+          has_special: a.hasSpecial || false,
+          default_sp_type: a.defaultSpType || 'holo',
+          stickers: a.stickers || {},
+          cover: a.cover || null,
+          updated_at: new Date().toISOString(),
+        })
+        setSyncing(false)
+        if (error) {
+          toast('Error guardando')
+          console.error(error)
+        }
+      }
+
+      async function dbDelete(id) {
+        setSyncing(true)
+        const { error } = await sb
+          .from('albums')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', user.id)
+        setSyncing(false)
+        if (error) {
+          toast('Error eliminando')
+          console.error(error)
+        }
+      }
+
+      function scheduleSave(a) {
+        clearTimeout(_st)
+        setSyncing(true)
+        _st = setTimeout(() => dbSave(a), 800)
+      }
+
+      // ── STATS ──────────────────────────────────────────────────────────────────
+      function stats(a) {
+        let hv = 0,
+          rp = 0,
+          ms = 0,
+          sp = 0
+        ;[...(a.normalIds || []), ...(a.specialIds || [])].forEach((id) => {
+          const x = a.stickers && a.stickers[id]
+          const st = x ? x.state : 'missing'
+          const tp = x ? x.type || 'normal' : 'normal'
+          if (st === 'have') hv++
+          else if (st === 'repeated') rp++
+          else ms++
+          if (tp !== 'normal') sp++
+        })
+        return {
+          hv,
+          rp,
+          ms,
+          sp,
+          total: (a.normalIds || []).length + (a.specialIds || []).length,
+        }
+      }
+
+      // ── HOME ───────────────────────────────────────────────────────────────────
+      function renderHome() {
+        const list = el('albums-list')
+        let th = 0,
+          tm = 0
+        if (!albums.length) {
+          list.innerHTML =
+            '<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg><h3>Sin álbumes aún</h3><p>Presioná "+ Álbum" para empezar</p></div>'
+          ;['gs-a', 'gs-h', 'gs-m'].forEach((id) => (el(id).textContent = 0))
+          el('gbar').style.width = '0%'
+          return
+        }
+        list.innerHTML = albums
+          .map((a) => {
+            const s = stats(a)
+            th += s.hv + s.rp
+            tm += s.ms
+            const pct =
+              s.total > 0 ? Math.round(((s.hv + s.rp) / s.total) * 100) : 0
+            const cov = a.cover
+              ? `<img src="${a.cover}" class="al-cover" alt="">`
+              : '<div class="al-cover-ph">📚</div>'
+            return `<div class="al-card" onclick="openAlbum('${a.id}')">${cov}<div class="al-info"><div class="al-name">${a.name}</div><div class="al-sub">${s.hv + s.rp}/${s.total}${a.hasSpecial ? ' · ' + a.specialIds.length + ' esp' : ''} · ${s.ms} faltan</div><div class="minibar"><div class="minibar-f" style="width:${pct}%"></div></div></div><div class="al-pct">${pct}%</div></div>`
+          })
+          .join('')
+        el('gs-a').textContent = albums.length
+        el('gs-h').textContent = th
+        el('gs-m').textContent = tm
+        el('gbar').style.width =
+          (th + tm > 0 ? Math.round((th / (th + tm)) * 100) : 0) + '%'
+      }
+
+      // ── NEW ALBUM ──────────────────────────────────────────────────────────────
+      function openNewModal() {
+        newCover = null
+        fmtN = 'number'
+        fmtSp = 'number'
+        hasEsp = false
+        ;[
+          'inp-name',
+          'inp-total',
+          'inp-letters',
+          'inp-sp-total',
+          'inp-sp-letters',
+        ].forEach((id) => (el(id).value = ''))
+        el('cover-prev').style.display = 'none'
+        el('cover-hint').style.display = 'block'
+        el('cover-input').value = ''
+        el('esp-sw').classList.remove('on')
+        el('esp-box').classList.remove('show')
+        el('f-total').style.display = ''
+        el('f-letters').style.display = 'none'
+        el('f-sp-total').style.display = ''
+        el('f-sp-letters').style.display = 'none'
+        document
+          .querySelectorAll('#fmt-normal-toggle .num-opt')
+          .forEach((b, i) => b.classList.toggle('sel', i === 0))
+        document
+          .querySelectorAll('#fmt-special-toggle .num-opt')
+          .forEach((b, i) => b.classList.toggle('sel', i === 0))
+        openModal('modal-new')
+      }
+
+      function previewCover(inp, prevId, hintId) {
+        const f = inp.files[0]
+        if (!f) return
+        const img = new Image()
+        const r = new FileReader()
+        r.onload = (e) => {
+          img.onload = () => {
+            const MAX = 400
+            let w = img.width,
+              h = img.height
+            if (w > MAX || h > MAX) {
+              const ratio = Math.min(MAX / w, MAX / h)
+              w = Math.round(w * ratio)
+              h = Math.round(h * ratio)
+            }
+            const c = document.createElement('canvas')
+            c.width = w
+            c.height = h
+            c.getContext('2d').drawImage(img, 0, 0, w, h)
+            const b64 = c.toDataURL('image/jpeg', 0.75)
+            el(prevId).src = b64
+            el(prevId).style.display = 'block'
+            el(hintId).style.display = 'none'
+            if (inp.id === 'cover-input') newCover = b64
+            else editCover = b64
+          }
+          img.src = e.target.result
+        }
+        r.readAsDataURL(f)
+      }
+
+      function selFmt(btn, sec) {
+        if (sec === 'normal') fmtN = btn.dataset.fmt
+        else fmtSp = btn.dataset.fmt
+        btn
+          .closest('.num-toggle')
+          .querySelectorAll('.num-opt')
+          .forEach((b) => b.classList.toggle('sel', b === btn))
+        if (sec === 'normal') {
+          el('f-total').style.display = fmtN === 'number' ? '' : 'none'
+          el('f-letters').style.display = fmtN === 'letter' ? '' : 'none'
+        } else {
+          el('f-sp-total').style.display = fmtSp === 'number' ? '' : 'none'
+          el('f-sp-letters').style.display = fmtSp === 'letter' ? '' : 'none'
+        }
+      }
+
+      function toggleEsp() {
+        hasEsp = !hasEsp
+        el('esp-sw').classList.toggle('on', hasEsp)
+        el('esp-box').classList.toggle('show', hasEsp)
+      }
+
+      function genIds(fmt, total, letRaw, prefix = '') {
+        if (fmt === 'number')
+          return Array.from({ length: total }, (_, i) => prefix + (i + 1))
+        if (letRaw && letRaw.trim())
+          return letRaw
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        return Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))
+      }
+
+      async function createAlbum() {
+        const name = el('inp-name').value.trim()
+        if (!name) {
+          toast('Escribí el nombre')
+          return
+        }
+        const normalIds = genIds(
+          fmtN,
+          parseInt(el('inp-total').value) || 0,
+          el('inp-letters').value
+        )
+        if (!normalIds.length) {
+          toast('Agregá la cantidad de láminas')
+          return
+        }
+        let specialIds = []
+        if (hasEsp) {
+          specialIds = genIds(
+            fmtSp,
+            parseInt(el('inp-sp-total').value) || 0,
+            el('inp-sp-letters').value,
+            'SP'
+          )
+          if (fmtSp === 'letter')
+            specialIds = genIds('letter', 0, el('inp-sp-letters').value)
+          if (!specialIds.length) {
+            toast('Agregá datos de las especiales')
+            return
+          }
+        }
+        const stickers = {}
+        specialIds.forEach((id) => {
+          stickers[id] = { state: 'missing', type: 'holo', note: '' }
+        })
+        const a = {
+          id: crypto.randomUUID(),
+          name,
+          fmtNormal: fmtN,
+          fmtSpecial: hasEsp ? fmtSp : null,
+          normalIds,
+          specialIds,
+          hasSpecial: hasEsp,
+          defaultSpType: 'holo',
+          stickers,
+          cover: newCover || null,
+        }
+        albums.push(a)
+        closeModal('modal-new')
+        await dbSave(a)
+        toast('✅ Álbum creado')
+        openAlbum(a.id)
+      }
+
+      // ── ALBUM DETAIL ───────────────────────────────────────────────────────────
+      function openAlbum(id) {
+        aid = id
+        filN = 'all'
+        filSp = 'all'
+        vm = 'grid'
+        tab = 'normal'
+        showView('view-album')
+        renderAlbum()
+      }
+
+      function setAlbumTab(t) {
+        tab = t
+        el('tab-normal').classList.toggle('on', t === 'normal')
+        el('tab-special').classList.toggle('on', t === 'special')
+        el('sec-normal').style.display = t === 'normal' ? '' : 'none'
+        el('sec-special').style.display = t === 'special' ? '' : 'none'
+      }
+
+      function renderAlbum() {
+        const a = alb()
+        if (!a) return
+        const s = stats(a)
+        const pct =
+          s.total > 0 ? Math.round(((s.hv + s.rp) / s.total) * 100) : 0
+        el('ah-name').textContent = a.name
+        el('ah-sub').textContent =
+          `${a.normalIds.length} normales${a.hasSpecial ? ' + ' + a.specialIds.length + ' especiales' : ''}`
+        el('ah-bar').style.width = pct + '%'
+        el('ah-pct').textContent = pct + '%'
+        el('ms-h').textContent = s.hv
+        el('ms-m').textContent = s.ms
+        el('ms-r').textContent = s.rp
+        el('ms-s').textContent = s.sp
+        el('ah-cover-wrap').innerHTML = a.cover
+          ? `<img src="${a.cover}" class="ah-cover" alt="">`
+          : '<div class="ah-cover-ph">📚</div>'
+        el('album-tabs-wrap').style.display = a.hasSpecial ? '' : 'none'
+        if (!a.hasSpecial) {
+          el('sec-normal').style.display = ''
+          el('sec-special').style.display = 'none'
+        }
+        renderGrid('normal')
+        if (a.hasSpecial) renderGrid('special')
+      }
+
+      function setFilter(f, btn, sec) {
+        if (sec === 'normal') filN = f
+        else filSp = f
+        btn
+          .closest('.filters')
+          .querySelectorAll('.pill')
+          .forEach((b) => b.classList.remove('on'))
+        btn.classList.add('on')
+        renderGrid(sec)
+      }
+      function setVM(m) {
+        vm = m
+        el('vt-g').classList.toggle('on', m === 'grid')
+        el('vt-l').classList.toggle('on', m === 'list')
+        renderGrid('normal')
+        const a = alb()
+        if (a && a.hasSpecial) renderGrid('special')
+      }
+
+      const TICO = {
+        normal: '',
+        holo: '✨',
+        gold: '🥇',
+        silver: '🥈',
+        error: '⚠️',
+      }
+      const TCLS = {
+        normal: '',
+        holo: 'lt-holo',
+        gold: 'lt-gold',
+        silver: 'lt-silver',
+        error: 'lt-err',
+      }
+
+      function renderGrid(sec) {
+        const a = alb()
+        if (!a) return
+        const ids = sec === 'normal' ? a.normalIds : a.specialIds
+        const fil = sec === 'normal' ? filN : filSp
+        const grid = el('sg-' + sec)
+        grid.className = 'sg' + (vm === 'list' ? ' list' : '')
+        let html = ''
+        const stk = a.stickers || {}
+        ids.forEach((id) => {
+          const x = stk[id]
+          const st = x ? x.state : 'missing'
+          const tp = x ? x.type || 'normal' : 'normal'
+          if (fil !== 'all' && st !== fil) return
+          const tc = TCLS[tp] || ''
+          const sc =
+            st === 'have' && !tc
+              ? 'ls-have'
+              : st === 'repeated' && !tc
+                ? 'ls-rep'
+                : st === 'have' && tc
+                  ? tc
+                  : st === 'repeated' && tc
+                    ? 'ls-rep ' + tc
+                    : tc
+          const ico = TICO[tp] || ''
+          const badge =
+            st === 'have'
+              ? '<span class="lbadge lbadge-ok">✓</span>'
+              : st === 'repeated'
+                ? '<span class="lbadge lbadge-rep">×2</span>'
+                : ''
+          const evts = `onmousedown="sp('${id}','${sec}',this)" onmouseup="ep('${id}','${sec}',this,event)" onmouseleave="clearTimeout(_pt)" ontouchstart="sp('${id}','${sec}',this)" ontouchend="ep('${id}','${sec}',this,event)"`
+          if (vm === 'list') {
+            const sc2 = {
+              have: '#2E7D32',
+              repeated: 'var(--amber)',
+              missing: 'var(--lt)',
+            }[st]
+            const sl = {
+              have: 'Tengo',
+              repeated: 'Repetida',
+              missing: 'Me falta',
+            }[st]
+            html += `<div class="list-row" ${evts}><span class="list-num">${id}</span><span class="list-name">${ico} Lámina ${id}${x && x.note ? ' 📝' : ''}</span><span style="font-size:12px;color:${sc2};font-weight:600">${sl}</span></div>`
+          } else {
+            html += `<div class="lam ${sc}" ${evts} title="${id}">${badge}<span class="lam-ico">${ico}</span><span class="lam-num">${id}</span></div>`
+          }
+        })
+        grid.innerHTML =
+          html ||
+          '<p style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;grid-column:1/-1">Sin láminas con este filtro</p>'
+      }
+
+      // ── TAP / LONGPRESS ────────────────────────────────────────────────────────
+      const CYCLE = ['missing', 'have', 'repeated']
+      const CTXT = {
+        missing: '⬜ Me falta',
+        have: '✅ La tengo',
+        repeated: '🔁 Repetida',
+      }
+
+      function sp(id, sec, e) {
+        _pt = setTimeout(() => {
+          _pt = null
+          openNote(id, sec)
+        }, 500)
+      }
+      function ep(id, sec, e, ev) {
+        if (_pt) {
+          clearTimeout(_pt)
+          _pt = null
+          tap(id, sec, e)
+        }
+        ev.preventDefault()
+      }
+
+      function tap(id, sec, el) {
+        const a = alb()
+        if (!a) return
+        if (!a.stickers) a.stickers = {}
+        const x = a.stickers[id] || {
+          state: 'missing',
+          type: sec === 'special' ? a.defaultSpType || 'holo' : 'normal',
+          note: '',
+        }
+        const next = CYCLE[(CYCLE.indexOf(x.state || 'missing') + 1) % 3]
+        a.stickers[id] = { ...x, state: next }
+        el.classList.add('lam-pulse')
+        setTimeout(() => el.classList.remove('lam-pulse'), 200)
+        toast(CTXT[next])
+        renderGrid(sec)
+        renderAlbum()
+        renderHome()
+        scheduleSave(a)
+      }
+
+      function openNote(id, sec) {
+        const a = alb()
+        if (!a) return
+        editLam = id
+        editSec = sec
+        const x = a.stickers && a.stickers[id]
+        el('note-id').textContent = id
+        el('note-info').textContent = {
+          have: 'Tengo ✓',
+          repeated: 'Repetida ×2',
+          missing: 'Me falta',
+        }[x ? x.state : 'missing']
+        el('note-txt').value = x ? x.note || '' : ''
+        openModal('modal-note')
+      }
+      function saveNote() {
+        const a = alb()
+        if (!a) return
+        if (!a.stickers) a.stickers = {}
+        const x = a.stickers[editLam] || {
+          state: 'missing',
+          type: editSec === 'special' ? a.defaultSpType || 'holo' : 'normal',
+          note: '',
+        }
+        a.stickers[editLam] = { ...x, note: el('note-txt').value.trim() }
+        closeModal('modal-note')
+        toast('📝 Nota guardada')
+        renderGrid(editSec)
+        scheduleSave(a)
+      }
+
+      // ── EDIT ───────────────────────────────────────────────────────────────────
+      function openEditModal() {
+        const a = alb()
+        if (!a) return
+        editCover = null
+        el('edit-name').value = a.name
+        el('edit-prev').style.display = a.cover ? 'block' : 'none'
+        if (a.cover) el('edit-prev').src = a.cover
+        el('edit-hint').style.display = a.cover ? 'none' : 'block'
+        el('edit-cover-input').value = ''
+        refreshEditInfo()
+        openModal('modal-edit')
+      }
+      function refreshEditInfo() {
+        const a = alb()
+        if (!a) return
+        const nIds = a.normalIds || []
+        const sIds = a.specialIds || []
+        const nFmt =
+          { number: 'números', letter: 'letras' }[a.fmtNormal] || 'números'
+        el('info-n').textContent =
+          `${nIds.length} láminas (${nFmt}) · última: ${nIds.length ? nIds[nIds.length - 1] : '—'}`
+        el('edit-sp-wrap').style.display = a.hasSpecial ? '' : 'none'
+        if (a.hasSpecial) {
+          const sFmt =
+            { number: 'números', letter: 'letras' }[a.fmtSpecial] || 'números'
+          el('info-sp-fmt').textContent =
+            `${sIds.length} especiales (${sFmt}) · última: ${sIds.length ? sIds[sIds.length - 1] : '—'}`
+          el('info-sp').textContent =
+            `${sIds.length} especiales · última: ${sIds.length ? sIds[sIds.length - 1] : '—'}`
+          document
+            .querySelectorAll('#edit-sp-fmt .num-opt')
+            .forEach((b) =>
+              b.classList.toggle('sel', b.dataset.fmt === a.fmtSpecial)
+            )
+        }
+      }
+      async function saveEditName() {
+        const a = alb()
+        if (!a) return
+        a.name = el('edit-name').value.trim() || a.name
+        if (editCover) a.cover = editCover
+        await dbSave(a)
+        renderAlbum()
+        renderHome()
+        toast('✅ Guardado')
+      }
+      function addN() {
+        modIds('normal', 'add')
+      }
+      function removeN() {
+        modIds('normal', 'remove')
+      }
+      function addSp() {
+        modIds('special', 'add')
+      }
+      function removeSp() {
+        modIds('special', 'remove')
+      }
+      function modIds(sec, action) {
+        const a = alb()
+        if (!a) return
+        const inputId = sec === 'normal' ? 'edit-add-n' : 'edit-add-sp'
+        const qty = parseInt(el(inputId).value) || 0
+        if (qty < 1) {
+          toast('Escribí la cantidad')
+          return
+        }
+        const ids = sec === 'normal' ? a.normalIds : a.specialIds
+        const fmt = sec === 'normal' ? a.fmtNormal : a.fmtSpecial
+        const prefix = sec === 'special' && fmt === 'number' ? 'SP' : ''
+        if (action === 'add') {
+          if (fmt === 'number') {
+            const nums = ids
+              .map((id) => parseInt(id.replace(/^SP/, '')))
+              .filter((n) => !isNaN(n))
+            let next = nums.length ? Math.max(...nums) + 1 : 1
+            for (let i = 0; i < qty; i++) ids.push(prefix + next++)
+          } else {
+            const last = ids[ids.length - 1] || ''
+            const nc = last ? last.charCodeAt(0) + 1 : 65
+            for (let i = 0; i < qty; i++) ids.push(String.fromCharCode(nc + i))
+          }
+          if (sec === 'special') {
+            if (!a.stickers) a.stickers = {}
+            ids.slice(-qty).forEach((id) => {
+              if (!a.stickers[id])
+                a.stickers[id] = {
+                  state: 'missing',
+                  type: a.defaultSpType || 'holo',
+                  note: '',
+                }
+            })
+          }
+          toast(`✅ ${qty} agregadas`)
+        } else {
+          if (qty >= ids.length) {
+            toast('No podés borrar todas')
+            return
+          }
+          const removed = ids.splice(-qty)
+          removed.forEach((id) => {
+            if (a.stickers) delete a.stickers[id]
+          })
+          toast(`🗑️ ${qty} eliminadas`)
+        }
+        el(inputId).value = ''
+        scheduleSave(a)
+        refreshEditInfo()
+        renderAlbum()
+        renderHome()
+      }
+      function changeSpFmt(btn) {
+        const a = alb()
+        if (!a) return
+        const newFmt = btn.dataset.fmt
+        if (newFmt === a.fmtSpecial) return
+        const qty = (a.specialIds || []).length
+        const newIds =
+          newFmt === 'number'
+            ? Array.from({ length: qty }, (_, i) => 'SP' + (i + 1))
+            : Array.from({ length: qty }, (_, i) => String.fromCharCode(65 + i))
+        const ns = {}
+        if (a.stickers)
+          a.normalIds.forEach((id) => {
+            if (a.stickers[id]) ns[id] = a.stickers[id]
+          })
+        newIds.forEach((id) => {
+          ns[id] = {
+            state: 'missing',
+            type: a.defaultSpType || 'holo',
+            note: '',
+          }
+        })
+        a.specialIds = newIds
+        a.fmtSpecial = newFmt
+        a.stickers = ns
+        scheduleSave(a)
+        refreshEditInfo()
+        renderAlbum()
+        renderHome()
+        toast(`✅ Cambiado a ${newFmt === 'letter' ? 'letras' : 'números'}`)
+      }
+
+      // ── DELETE ─────────────────────────────────────────────────────────────────
+      function openConfirmDelete() {
+        const a = alb()
+        if (!a) return
+        el('del-msg').textContent =
+          `Vas a eliminar "${a.name}". No se puede deshacer.`
+        openModal('modal-del')
+      }
+      async function doDelete() {
+        await dbDelete(aid)
+        albums = albums.filter((a) => a.id !== aid)
+        closeModal('modal-del')
+        goHome()
+        toast('🗑️ Eliminado')
+      }
+
+      // ── QR / SHARE ─────────────────────────────────────────────────────────────
+      function openQRModal() {
+        const a = alb()
+        if (!a) return
+        const s = stats(a)
+        const missing = [],
+          spMissing = [],
+          repeated = []
+        ;(a.normalIds || []).forEach((id) => {
+          const st =
+            a.stickers && a.stickers[id] ? a.stickers[id].state : 'missing'
+          if (st === 'missing') missing.push(id)
+          if (st === 'repeated') repeated.push(id)
+        })
+        ;(a.specialIds || []).forEach((id) => {
+          const st =
+            a.stickers && a.stickers[id] ? a.stickers[id].state : 'missing'
+          if (st === 'missing') spMissing.push(id)
+          if (st === 'repeated') repeated.push(id)
+        })
+        let payload = {
+          v: 1,
+          n: a.name,
+          t: s.total,
+          nm: missing,
+          sm: spMissing,
+          r: repeated,
+        }
+        let enc = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+        if (enc.length > 1500) {
+          payload = {
+            v: 1,
+            n: a.name,
+            t: s.total,
+            nm: missing.slice(0, 100),
+            sm: spMissing.slice(0, 20),
+            r: repeated.slice(0, 20),
+            trunc: 1,
+          }
+          enc = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+        }
+        const url = location.origin + location.pathname + '?share=' + enc
+        window._surl = url
+        window._salb = a
+        el('qr-sub').textContent = `${a.name} · ${s.ms} faltantes`
+        el('qr-wrap').innerHTML = ''
+        try {
+          new QRCode(el('qr-wrap'), {
+            text: url,
+            width: 200,
+            height: 200,
+            colorDark: '#161B26',
+            colorLight: '#fff',
+            correctLevel: QRCode.CorrectLevel.L,
+          })
+        } catch (e) {}
+        el('qr-link').textContent =
+          url.length > 80 ? url.slice(0, 80) + '…' : url
+        el('qr-note').innerHTML =
+          `<strong>${missing.length}</strong> normales faltantes` +
+          (spMissing.length
+            ? ` · <strong>${spMissing.length}</strong> especiales`
+            : '') +
+          (repeated.length
+            ? ` · <strong>${repeated.length}</strong> para intercambio`
+            : '')
+        openModal('modal-qr')
+      }
+      function copyLink() {
+        if (!window._surl) {
+          toast('Generá el QR primero')
+          return
+        }
+        navigator.clipboard
+          .writeText(window._surl)
+          .then(() => toast('✅ Copiado'))
+          .catch(() => toast('No se pudo copiar'))
+      }
+      function shareWA() {
+        const a = window._salb || alb()
+        if (!a) return
+        const missing = [],
+          spMissing = [],
+          repeated = []
+        ;(a.normalIds || []).forEach((id) => {
+          const st =
+            a.stickers && a.stickers[id] ? a.stickers[id].state : 'missing'
+          if (st === 'missing') missing.push(id)
+          if (st === 'repeated') repeated.push(id)
+        })
+        ;(a.specialIds || []).forEach((id) => {
+          const st =
+            a.stickers && a.stickers[id] ? a.stickers[id].state : 'missing'
+          if (st === 'missing') spMissing.push(id)
+        })
+        let msg = `📋 *${a.name}* — me faltan:\n`
+        if (missing.length) msg += `Normales: ${missing.join(', ')}\n`
+        if (spMissing.length) msg += `✨ Especiales: ${spMissing.join(', ')}\n`
+        if (repeated.length)
+          msg += `🔁 Tengo repetidas: ${repeated.join(', ')}\n`
+        if (window._surl) msg += `\nVer lista: ${window._surl}`
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank')
+      }
+
+      // ── PUBLIC VIEW ─────────────────────────────────────────────────────────────
+      function renderPublic(d) {
+        const { n = '', nm = [], sm = [], r = [], t = 0 } = d
+        document.title = n + ' — Lista'
+        el('pub-title').textContent = n
+        const hv = t - nm.length - sm.length
+        el('pub-sub').textContent =
+          `${hv}/${t} · ${t > 0 ? Math.round((hv / t) * 100) : 0}% completo`
+        el('pub-missing').innerHTML =
+          `<div class="chips-box"><div class="chips-title">Me faltan — normales (${nm.length})</div><div class="chips">${nm.map((x) => `<span class="chip">${x}</span>`).join('') || '<span style="color:var(--muted);font-size:13px">✅ Ninguna</span>'}</div></div>`
+        el('pub-sp-missing').innerHTML = sm.length
+          ? `<div class="chips-box" style="background:linear-gradient(135deg,#f8f0ff,#eff8ff)"><div class="chips-title" style="color:var(--holo-a)">✨ Especiales faltantes (${sm.length})</div><div class="chips">${sm.map((x) => `<span class="chip">${x}</span>`).join('')}</div></div>`
+          : ''
+        el('pub-repeated').innerHTML = r.length
+          ? `<div class="chips-box" style="border-color:rgba(186,117,23,.3)"><div class="chips-title" style="color:var(--amber)">Puedo intercambiar (${r.length})</div><div class="chips">${r.map((x) => `<span class="chip">${x}</span>`).join('')}</div></div>`
+          : ''
+      }
+
+      document.querySelectorAll('.overlay').forEach((o) =>
+        o.addEventListener('click', (e) => {
+          if (e.target === o) o.classList.remove('open')
+        })
+      )
+    </script>
+  </body>
+</html>
