@@ -556,9 +556,38 @@ let _pressTimer=null, _saveTimer=null;
 // INIT — Auth listener primero, luego check sesión
 // ═══════════════════════════════════════════════════════
 function startApp(){
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(event==='SIGNED_IN' && session && !user){
-    await onLogin(session.user);
+  window.logout=logout;
+  window.loginEmail=loginEmail;
+  window.loginGitHub=loginGitHub;
+  window.registerEmail=registerEmail;
+  window.showLogin=showLogin;
+  window.showRegister=showRegister;
+  window.goHome=goHome;
+  window.openNewModal=openNewModal;
+  window.openAlbum=openAlbum;
+  window.createAlbum=createAlbum;
+  window.openEditModal=openEditModal;
+  window.saveEdit=saveEdit;
+  window.openConfirmDelete=openConfirmDelete;
+  window.doDelete=doDelete;
+  window.openQRModal=openQRModal;
+  window.copyLink=copyLink;
+  window.shareWA=shareWA;
+  window.closeModal=closeModal;
+  window.setAlbumTab=setAlbumTab;
+  window.setFilter=setFilter;
+  window.setVM=setVM;
+  window.quickFilter=quickFilter;
+  window.selFmt=selFmt;
+  window.toggleEsp=toggleEsp;
+  window.previewCover=previewCover;
+  window.modIds=modIds;
+  window.changeSpFmt=changeSpFmt;
+  window.saveNote=saveNote;
+  window.saveRepeated=saveRepeated;
+  window.startPress=startPress;
+  window.endPress=endPress;
+sb.auth.onAuthStateChange(
   }
   if(event==='SIGNED_OUT'){
     user=null; albums=[];
