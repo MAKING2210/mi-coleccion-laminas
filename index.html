@@ -535,7 +535,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 // ═══════════════════════════════════════════════════════
 const SURL='https://skkcppfiihleubnntdnk.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNra2NwcGZpaWhsZXVibm50ZG5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzOTQyMzgsImV4cCI6MjA5Njk3MDIzOH0.BI3rwB34gBWALvhsszGn3OUwn7zbF3iMO7t9xXorJy4';
-const sb=window.supabase.createClient(SURL,SKEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'mc-v1'}});
+let sb;
+document.addEventListener('DOMContentLoaded',()=>{
+  sb=window.supabase.createClient(SURL,SKEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'mc-v1'}});
+  window.sb=sb;
+  startApp();
+});
 
 // ═══════════════════════════════════════════════════════
 // STATE
@@ -550,6 +555,7 @@ let _pressTimer=null, _saveTimer=null;
 // ═══════════════════════════════════════════════════════
 // INIT — Auth listener primero, luego check sesión
 // ═══════════════════════════════════════════════════════
+function startApp(){
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_IN' && session && !user){
     await onLogin(session.user);
@@ -1132,7 +1138,7 @@ function renderPublic(d){
   el('pub-sp-missing').innerHTML=sm.length?`<div class="chips-box" style="background:linear-gradient(135deg,#f8f0ff,#eff8ff);border-color:rgba(124,58,237,.2)"><div class="chips-title" style="color:var(--holo-a)">✨ Especiales faltantes (${sm.length})</div><div class="chips">${sm.map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>`:'';
   el('pub-repeated').innerHTML=r.length?`<div class="chips-box" style="border-color:rgba(186,117,23,.3)"><div class="chips-title" style="color:var(--amber)">Puedo intercambiar (${r.length})</div><div class="chips">${r.map(x=>`<span class="chip">${x}</span>`).join('')}</div></div>`:'';
 }
-
+}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
 </script>
 </body>
