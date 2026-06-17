@@ -643,8 +643,8 @@ function doDelete(){dbDelete(aid);albums=albums.filter(function(a){return a.id!=
 function buildShareData(a){var missing=[],spMissing=[],repeated=[];(a.normalIds||[]).forEach(function(id){var st=(a.stickers&&a.stickers[id])?a.stickers[id].state:'missing';if(st==='missing')missing.push(id);if(st==='repeated')repeated.push(id);});(a.specialIds||[]).forEach(function(id){var st=(a.stickers&&a.stickers[id])?a.stickers[id].state:'missing';if(st==='missing')spMissing.push(id);if(st==='repeated')repeated.push(id);});return{missing:missing,spMissing:spMissing,repeated:repeated};}
 function openQRModal(){
   var a=alb();if(!a)return;var s=stats(a);var d=buildShareData(a);
-  // Compact format: n=name|t=total|m=missing csv|s=special missing csv|r=repeated csv
-  var compact=a.name+'|'+s.total+'|'+d.missing.join(',')+'|'+d.spMissing.join(',')+'|'+d.repeated.join(',');
+  // Compact format: id|name|total|missing csv|special missing csv|repeated csv
+  var compact=a.id+'|'+a.name+'|'+s.total+'|'+d.missing.join(',')+'|'+d.spMissing.join(',')+'|'+d.repeated.join(',');
   var enc=btoa(unescape(encodeURIComponent(compact))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   var url=location.origin+location.pathname+'?s='+enc;
   window._surl=url;window._salb=a;
@@ -700,21 +700,31 @@ function initApp(){
 var shareCompact=new URLSearchParams(location.search).get('s');
 var shareParam=new URLSearchParams(location.search).get('share');
 if(shareCompact||shareParam){
-  // Read-only public view: never touch Supabase, never show nav, never check session
+  // Read-only public view: never touch Supabase auth, never show nav, never check session
   el('loading').classList.add('hide');
   el('app').style.display='block';
   el('main-nav').style.display='none'; // hide entire nav bar — no account, no buttons, no logout
   var parsedOk=false;
+  var sharedAlbumId=null;
   try{
     if(shareCompact){
       var b64=shareCompact.replace(/-/g,'+').replace(/_/g,'/');
       while(b64.length%4)b64+='=';
       var compact=decodeURIComponent(escape(atob(b64)));
       var parts=compact.split('|');
-      var n=parts[0],t=parseInt(parts[1])||0;
-      var nm=parts[2]?parts[2].split(','):[];
-      var sm=parts[3]?parts[3].split(','):[];
-      var r=parts[4]?parts[4].split(','):[];
+      // New format has id as first part (36-char uuid); old format (5 parts, no id) still supported
+      if(parts.length>=6){
+        sharedAlbumId=parts[0];
+        var n=parts[1],t=parseInt(parts[2])||0;
+        var nm=parts[3]?parts[3].split(','):[];
+        var sm=parts[4]?parts[4].split(','):[];
+        var r=parts[5]?parts[5].split(','):[];
+      } else {
+        var n=parts[0],t=parseInt(parts[1])||0;
+        var nm=parts[2]?parts[2].split(','):[];
+        var sm=parts[3]?parts[3].split(','):[];
+        var r=parts[4]?parts[4].split(','):[];
+      }
       renderPublic({n:n,t:t,nm:nm,sm:sm,r:r});
       parsedOk=true;
     } else if(shareParam){
@@ -727,8 +737,31 @@ if(shareCompact||shareParam){
     el('pub-sub').textContent='El link puede estar incompleto. Pedile a tu amigo que lo reenvie.';
   }
   showView('view-public');
+  // Fetch cover image separately (read-only, no auth needed thanks to public RLS policy)
+  if(sharedAlbumId){
+    fetchPublicCover(sharedAlbumId);
+  }
 } else {
   initApp();
+}
+
+function fetchPublicCover(albumId){
+  if(!window.supabase){setTimeout(function(){fetchPublicCover(albumId);},100);return;}
+  var pubSb=window.supabase.createClient(SURL,SKEY,{auth:{persistSession:false}});
+  pubSb.from('albums').select('cover').eq('id',albumId).maybeSingle().then(function(r){
+    if(r.data&&r.data.cover){
+      var ph=document.querySelector('.pub-cover-ph');
+      if(ph){
+        var img=document.createElement('img');
+        img.src=r.data.cover;
+        img.alt='';
+        img.style.width='64px';img.style.height='80px';img.style.borderRadius='8px';
+        img.style.objectFit='cover';img.style.flexShrink='0';
+        img.style.border='2px solid rgba(255,255,255,.3)';
+        ph.replaceWith(img);
+      }
+    }
+  }).catch(function(e){console.error('cover fetch error:',e);});
 }
 </script>
 </body>
