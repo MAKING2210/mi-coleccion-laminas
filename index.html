@@ -281,7 +281,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
           <div class="leg-i"><div class="leg-d" style="background:var(--bg);border-color:var(--bdr-md)"></div>Falta</div>
         </div>
         <div id="sg-normal" class="sg"></div>
-        <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = cambiar estado - Toque largo = nota</p>
+        <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = tengo / no tengo - Toque largo = repetida o nota</p>
       </div>
       <div id="sec-special" style="display:none">
         <div class="toolbar">
@@ -299,7 +299,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
           <div class="leg-i"><div class="leg-d" style="background:#fff0f0;border-color:var(--err)"></div>Error</div>
         </div>
         <div id="sg-special" class="sg"></div>
-        <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = cambiar estado - Toque largo = nota</p>
+        <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = tengo / no tengo - Toque largo = repetida o nota</p>
       </div>
 
       <div style="display:flex;gap:8px;margin-top:1.5rem;margin-bottom:1rem">
@@ -363,6 +363,18 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
       <div class="field"><div style="display:flex;gap:8px;margin-bottom:5px"><input id="edit-add-sp" type="number" placeholder="Cantidad" min="1" style="flex:1"><button class="btn btn-sm btn-primary" onclick="modIds('special','add')">+ Agregar</button><button class="btn btn-sm btn-danger" onclick="modIds('special','remove')">- Borrar</button></div><p id="info-sp" style="font-size:11px;color:var(--muted)">-</p></div>
     </div>
     <div class="mactions"><button class="btn" onclick="closeModal('modal-edit')">Cerrar</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-lam-menu">
+  <div class="modal" style="max-width:280px;text-align:center">
+    <h2>Lamina <span id="lam-menu-id">-</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Estado actual: <span id="lam-menu-state">-</span></p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary btn-full" onclick="menuMarkRepeated()">Marcar como repetida</button>
+      <button class="btn btn-full" onclick="menuAddNote()">Agregar nota</button>
+      <button class="btn btn-full" onclick="closeModal('modal-lam-menu')">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -553,7 +565,7 @@ var _touchStartX=0,_touchStartY=0,_touchMoved=false;
 function startPress(id,sec,e,ev){
   _touchMoved=false;
   if(ev&&ev.touches&&ev.touches[0]){_touchStartX=ev.touches[0].clientX;_touchStartY=ev.touches[0].clientY;}
-  _pressTimer=setTimeout(function(){_pressTimer=null;if(!_touchMoved)openNote(id,sec);},500);
+  _pressTimer=setTimeout(function(){_pressTimer=null;if(!_touchMoved)openLamMenu(id,sec);},500);
 }
 function cancelPressIfMoved(ev){
   if(!ev.touches||!ev.touches[0])return;
@@ -567,12 +579,34 @@ function endPress(id,sec,domEl,ev){
   if(ev&&ev.cancelable)ev.preventDefault();
 }
 function tapLam(id,sec,domEl){
+  // Simple toggle: missing <-> have. Repeated and notes are set via long-press menu.
   var a=alb();if(!a)return;if(!a.stickers)a.stickers={};
   var x=a.stickers[id]||{state:'missing',type:sec==='special'?(a.defaultSpType||'holo'):'normal',note:'',qty:0};
   var cur=x.state||'missing';
-  if(cur==='missing'){a.stickers[id]=Object.assign({},x,{state:'have',qty:0});domEl.classList.add('lam-pulse');setTimeout(function(){domEl.classList.remove('lam-pulse');},200);toast('La tengo');renderGrid(sec);renderAlbum();renderHome();scheduleSave(a);}
-  else if(cur==='have'){repLam=id;repSec=sec;el('rep-id').textContent=id;el('rep-qty').value=2;openModal('modal-rep');}
-  else if(cur==='repeated'){a.stickers[id]=Object.assign({},x,{state:'missing',qty:0});domEl.classList.add('lam-pulse');setTimeout(function(){domEl.classList.remove('lam-pulse');},200);toast('Sin marcar');renderGrid(sec);renderAlbum();renderHome();scheduleSave(a);}
+  var next=cur==='missing'?'have':'missing';
+  a.stickers[id]=Object.assign({},x,{state:next,qty:next==='missing'?0:x.qty});
+  domEl.classList.add('lam-pulse');setTimeout(function(){domEl.classList.remove('lam-pulse');},200);
+  toast(next==='have'?'La tengo':'Sin marcar');
+  renderGrid(sec);renderAlbum();renderHome();scheduleSave(a);
+}
+function openLamMenu(id,sec){
+  var a=alb();if(!a)return;
+  editLam=id;editSec=sec;repLam=id;repSec=sec;
+  var x=a.stickers&&a.stickers[id];
+  el('lam-menu-id').textContent=id;
+  el('lam-menu-state').textContent=STATE_LABEL[x?x.state:'missing'];
+  openModal('modal-lam-menu');
+}
+function menuMarkRepeated(){
+  closeModal('modal-lam-menu');
+  el('rep-id').textContent=repLam;
+  var a=alb();var x=a&&a.stickers&&a.stickers[repLam];
+  el('rep-qty').value=x&&x.qty>=2?x.qty:2;
+  openModal('modal-rep');
+}
+function menuAddNote(){
+  closeModal('modal-lam-menu');
+  openNote(editLam,editSec);
 }
 function saveRepeated(){var a=alb();if(!a||!repLam)return;var qty=parseInt(el('rep-qty').value)||2;if(qty<2){toast('Minimo 2 repetidas');return;}if(!a.stickers)a.stickers={};var x=a.stickers[repLam]||{state:'missing',type:repSec==='special'?(a.defaultSpType||'holo'):'normal',note:'',qty:0};a.stickers[repLam]=Object.assign({},x,{state:'repeated',qty:qty});closeModal('modal-rep');toast(qty+' repetidas');renderGrid(repSec);renderAlbum();renderHome();scheduleSave(a);}
 
