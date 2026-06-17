@@ -529,7 +529,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="toast" id="toast"></div>
 
-<script defer>
+<script>
 // ═══════════════════════════════════════════════════════
 // SUPABASE — init after DOM ready
 // ═══════════════════════════════════════════════════════
@@ -1141,11 +1141,16 @@ function renderPublic(d){
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-  sb=window.supabase.createClient(SURL,SKEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'mc-v1'}});
-  window.sb=sb;
-  initAuth();
-});
+function tryInit(){
+  if(window.supabase){
+    sb=window.supabase.createClient(SURL,SKEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'mc-v1'}});
+    window.sb=sb;
+    initAuth();
+  } else {
+    setTimeout(tryInit,100);
+  }
+}
+document.addEventListener('DOMContentLoaded',tryInit);
 </script>
 </body>
 </html>
