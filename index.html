@@ -211,7 +211,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div id="app" style="display:none">
-  <nav class="nav">
+  <nav class="nav" id="main-nav">
     <div class="nav-brand">
       <div class="nav-logo"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg></div>
       <span class="nav-title">Mi Coleccion</span>
@@ -221,7 +221,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <span class="nav-user" id="nav-user"></span>
       <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goHome()">← Inicio</button>
       <button class="btn btn-sm btn-primary" id="btn-new" onclick="openNewModal()">+ Album</button>
-      <button class="btn btn-sm" onclick="logout()">salir</button>
+      <button class="btn btn-sm" id="btn-logout" onclick="logout()">salir</button>
     </div>
   </nav>
 
@@ -310,7 +310,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 
-  <div id="view-public" class="view">
+  <div id="view-public" class="view" style="padding-top:1rem">
     <div class="wrap">
       <div class="pub-hero"><div class="pub-cover-ph">&#128218;</div><div class="pub-info"><h2 id="pub-title">-</h2><p id="pub-sub">-</p></div></div>
       <div id="pub-missing"></div><div id="pub-sp-missing"></div><div id="pub-repeated"></div>
@@ -649,16 +649,13 @@ function initApp(){
   }).catch(function(e){console.error(e);el('loading').classList.add('hide');el('view-login').style.display='flex';});
 }
 
-// Check for public share URL first
+// Check for public share URL FIRST — if present, skip auth entirely
 var shareParam=new URLSearchParams(location.search).get('share');
 if(shareParam){
-  el('loading').classList.add('hide');el('app').style.display='block';
-  // Hide all account/edit controls — this is a read-only public view
-  el('sync-dot').style.display='none';
-  el('nav-user').style.display='none';
-  el('nav-back').style.display='none';
-  el('btn-new').style.display='none';
-  document.querySelector('.nav-right button[onclick="logout()"]').style.display='none';
+  // Read-only public view: never touch Supabase, never show nav, never check session
+  el('loading').classList.add('hide');
+  el('app').style.display='block';
+  el('main-nav').style.display='none'; // hide entire nav bar — no account, no buttons, no logout
   try{renderPublic(JSON.parse(decodeURIComponent(escape(atob(shareParam)))));}catch(e){}
   showView('view-public');
 } else {
