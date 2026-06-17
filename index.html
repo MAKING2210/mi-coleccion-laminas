@@ -6,15 +6,18 @@
 <title>Mi Coleccion de Laminas</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#1A56A0;--blue-l:#E6F1FB;--blue-d:#0C3D78;--gold:#C8960A;--gold-l:#FFF8E1;--silver:#7B8FA1;--silver-l:#EEF2F5;--holo-a:#7C3AED;--holo-b:#0EA5E9;--err:#D14040;--green:#2E7D32;--green-l:#EAF3DE;--amber:#BA7517;--amber-l:#FAEEDA;--bg:#F5F6F8;--surf:#fff;--bdr:rgba(0,0,0,.09);--bdr-md:rgba(0,0,0,.16);--txt:#161B26;--muted:#6B7280;--lt:#9CA3AF;--r:10px;--rl:14px}
+:root{--blue:#8C2F39;--blue-l:#F7E8E5;--blue-d:#5E1F26;--gold:#B8860B;--gold-l:#FBF2DC;--silver:#7B8FA1;--silver-l:#EEF2F5;--holo-a:#6B4FA0;--holo-b:#2D8B8B;--err:#A8392E;--green:#54622E;--green-l:#EAEEDC;--amber:#A6711F;--amber-l:#F7EAD6;--bg:#F4EFE6;--surf:#FFFCF7;--bdr:rgba(74,52,32,.13);--bdr-md:rgba(74,52,32,.22);--txt:#2B2018;--muted:#6E5F4E;--lt:#A39580;--r:10px;--rl:14px;--f-display:'Fraunces',Georgia,serif;--f-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:100vh;-webkit-font-smoothing:antialiased}
 .nav{background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1rem;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:50}
 .nav-brand{display:flex;align-items:center;gap:9px}
 .nav-logo{width:30px;height:30px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center}
 .nav-logo svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
-.nav-title{font-size:15px;font-weight:700}
+.nav-title{font-family:var(--f-display);font-size:17px;font-weight:700;letter-spacing:-.01em}
 .nav-right{display:flex;align-items:center;gap:8px}
 .nav-user{font-size:12px;color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block}
@@ -41,7 +44,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .login-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:2rem;max-width:360px;width:100%}
 .login-logo{width:52px;height:52px;background:var(--blue);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem}
 .login-logo svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
-.login-card h1{font-size:22px;font-weight:800;text-align:center;margin-bottom:4px}
+.login-card h1{font-family:var(--f-display);font-size:28px;font-weight:700;text-align:center;margin-bottom:4px;letter-spacing:-.01em}
 .login-card p{font-size:13px;color:var(--muted);text-align:center;margin-bottom:1.5rem;line-height:1.5}
 .login-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--lt);font-size:12px}
 .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--bdr)}
@@ -56,11 +59,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .field-error{font-size:12px;color:var(--err);margin-top:4px;display:none}
 .field-error.show{display:block}
 .home-top{margin-bottom:1.25rem}
-.home-top h2{font-size:21px;font-weight:700}
+.home-top h2{font-family:var(--f-display);font-size:25px;font-weight:700;letter-spacing:-.01em}
 .home-top p{font-size:13px;color:var(--muted);margin-top:3px}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:1rem}
 .sc{background:var(--surf);border-radius:var(--r);border:1px solid var(--bdr);padding:13px;text-align:center}
-.sc-n{font-size:25px;font-weight:800}
+.sc-n{font-family:var(--f-display);font-size:27px;font-weight:700}
 .sc-l{font-size:11px;color:var(--muted);margin-top:1px;text-transform:uppercase;letter-spacing:.05em}
 .gbar{height:6px;background:var(--bdr);border-radius:3px;margin-bottom:1.5rem;overflow:hidden}
 .gbar-f{height:100%;background:linear-gradient(90deg,var(--blue),var(--holo-b));border-radius:3px;transition:width .5s}
@@ -84,7 +87,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ah-cover{width:64px;height:80px;border-radius:8px;object-fit:cover;border:1px solid var(--bdr);flex-shrink:0}
 .ah-cover-ph{width:64px;height:80px;border-radius:8px;flex-shrink:0;border:1px solid var(--bdr);background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--lt);font-size:28px}
 .ah-meta{flex:1;min-width:0}
-.ah-meta h2{font-size:18px;font-weight:700}
+.ah-meta h2{font-family:var(--f-display);font-size:21px;font-weight:700;letter-spacing:-.01em}
 .ah-meta p{font-size:12px;color:var(--muted);margin-top:4px}
 .ah-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .prog-row{display:flex;align-items:center;gap:10px;margin-top:13px}
@@ -111,14 +114,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .leg-d{width:10px;height:10px;border-radius:3px;border:1.5px solid}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:5px;margin-bottom:.5rem}
 .sg.list{grid-template-columns:1fr}
-.lam{width:56px;height:68px;border-radius:8px;border:1.5px solid var(--bdr);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .11s;position:relative;background:var(--surf);gap:2px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y}
+.lam{width:56px;height:68px;border-radius:10px;border:1.5px solid var(--bdr);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .11s;position:relative;background:var(--surf);gap:2px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;box-shadow:0 1px 2px rgba(74,52,32,.08)}
 .lam:hover{transform:scale(1.07);z-index:2}
 .lam-num{font-size:10px;font-weight:700;color:var(--muted);line-height:1}
 .lam-ico{font-size:13px;line-height:1}
 .ls-have{background:var(--green-l);border-color:#639922}.ls-have .lam-num{color:#2E7D32}
 .ls-rep{background:var(--amber-l);border-color:var(--amber)}.ls-rep .lam-num{color:var(--amber)}
-.lt-holo{background:linear-gradient(135deg,#f0e6ff,#e0f2fe);border-color:var(--holo-a)}.lt-holo .lam-num{color:var(--holo-a)}
-.lt-gold{background:linear-gradient(135deg,#fffde7,#fff8e1);border-color:var(--gold)}.lt-gold .lam-num{color:var(--gold)}
+.lt-holo{background:linear-gradient(135deg,#EEE8F7,#E2F1F1)}.lt-holo .lam-num{color:var(--holo-a)}
+.lt-gold{background:linear-gradient(135deg,#FBF2DC,#F7E6BF)}.lt-gold .lam-num{color:var(--gold)}
 .lt-silver{background:var(--silver-l);border-color:var(--silver)}.lt-silver .lam-num{color:var(--silver)}
 .lt-err{background:#fff0f0;border-color:var(--err)}.lt-err .lam-num{color:var(--err)}
 .lbadge{position:absolute;top:2px;right:2px;font-size:7px;font-weight:700;padding:1px 3px;border-radius:3px;color:#fff;line-height:1.3}
@@ -169,7 +172,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .qr-note{background:var(--blue-l);border-radius:var(--r);padding:11px;font-size:12px;color:var(--blue-d)}
 .pub-hero{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border-radius:var(--rl);padding:1.25rem;margin-bottom:1.25rem;display:flex;gap:14px;align-items:center}
 .pub-cover-ph{width:64px;height:80px;border-radius:8px;flex-shrink:0;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:28px}
-.pub-info h2{font-size:19px;font-weight:700}
+.pub-info h2{font-family:var(--f-display);font-size:23px;font-weight:700;letter-spacing:-.01em}
 .pub-info p{font-size:13px;opacity:.85;margin-top:4px}
 .chips-box{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:14px;margin-bottom:10px}
 .chips-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
