@@ -216,7 +216,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
     </div>
     <div class="nav-right">
       <span class="sync-dot" id="sync-dot"></span>
-      <span class="nav-user" id="nav-user"></span>
+      <span class="nav-user" id="nav-user" onclick="openNameModal()" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" title="Tocar para cambiar tu nombre"></span>
       <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goHome()">← Inicio</button>
       <button class="btn btn-sm btn-primary" id="btn-new" onclick="openNewModal()">+ Album</button>
       <button class="btn btn-sm" id="btn-logout" onclick="logout()">salir</button>
@@ -413,6 +413,14 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
   </div>
 </div>
 
+<div class="overlay" id="modal-name">
+  <div class="modal" style="max-width:320px">
+    <h2>Tu nombre</h2>
+    <div class="field"><label>Como te queres llamar en la app</label><input id="edit-display-name" placeholder="Ej: Mario, El coleccionista..."><div class="field-error" id="name-error"></div></div>
+    <div class="mactions"><button class="btn" onclick="closeModal('modal-name')">Cancelar</button><button class="btn btn-primary" onclick="saveDisplayName()">Guardar</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -453,6 +461,27 @@ function showLogin(){el('login-form').style.display='';el('register-form').style
 function showRegister(){el('login-form').style.display='none';el('register-form').style.display='';}
 function loginGitHub(){sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.origin+location.pathname}});}
 function logout(){sb.auth.signOut();}
+function openNameModal(){
+  if(!user)return;
+  var current=user.user_metadata&&user.user_metadata.user_name?user.user_metadata.user_name:'';
+  el('edit-display-name').value=current;
+  el('name-error').classList.remove('show');
+  openModal('modal-name');
+}
+function saveDisplayName(){
+  var newName=el('edit-display-name').value.trim();
+  var errEl=el('name-error');
+  if(!newName){errEl.textContent='Escribi un nombre';errEl.classList.add('show');return;}
+  if(newName.length>30){errEl.textContent='Maximo 30 caracteres';errEl.classList.add('show');return;}
+  sb.auth.updateUser({data:{user_name:newName}}).then(function(r){
+    if(r.error){errEl.textContent=r.error.message;errEl.classList.add('show');return;}
+    user=r.data.user;
+    el('nav-user').textContent=newName;
+    el('greeting').textContent='Hola, '+newName.split(' ')[0];
+    closeModal('modal-name');
+    toast('Nombre actualizado');
+  });
+}
 function loginEmail(){
   var email=el('login-email').value.trim();var pass=el('login-pass').value;
   if(!email||!pass){toast('Completa email y contrasena');return;}
