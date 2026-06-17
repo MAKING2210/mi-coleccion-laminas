@@ -1140,6 +1140,39 @@ function renderPublic(d){
 }
 
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+// Expose all functions globally so HTML onclick works
+  window.logout=logout;
+  window.loginEmail=loginEmail;
+  window.loginGitHub=loginGitHub;
+  window.registerEmail=registerEmail;
+  window.showLogin=showLogin;
+  window.showRegister=showRegister;
+  window.goHome=goHome;
+  window.openNewModal=openNewModal;
+  window.openAlbum=openAlbum;
+  window.createAlbum=createAlbum;
+  window.openEditModal=openEditModal;
+  window.saveEdit=saveEdit;
+  window.openConfirmDelete=openConfirmDelete;
+  window.doDelete=doDelete;
+  window.openQRModal=openQRModal;
+  window.copyLink=copyLink;
+  window.shareWA=shareWA;
+  window.closeModal=closeModal;
+  window.openModal=openModal;
+  window.setAlbumTab=setAlbumTab;
+  window.setFilter=setFilter;
+  window.setVM=setVM;
+  window.quickFilter=quickFilter;
+  window.selFmt=selFmt;
+  window.toggleEsp=toggleEsp;
+  window.previewCover=previewCover;
+  window.modIds=modIds;
+  window.changeSpFmt=changeSpFmt;
+  window.saveNote=saveNote;
+  window.saveRepeated=saveRepeated;
+  window.startPress=startPress;
+  window.endPress=endPress;
 } // end startApp
 </script>
 </body>
