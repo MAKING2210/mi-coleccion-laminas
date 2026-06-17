@@ -606,10 +606,10 @@ function doDelete(){dbDelete(aid);albums=albums.filter(function(a){return a.id!=
 function buildShareData(a){var missing=[],spMissing=[],repeated=[];(a.normalIds||[]).forEach(function(id){var st=(a.stickers&&a.stickers[id])?a.stickers[id].state:'missing';if(st==='missing')missing.push(id);if(st==='repeated')repeated.push(id);});(a.specialIds||[]).forEach(function(id){var st=(a.stickers&&a.stickers[id])?a.stickers[id].state:'missing';if(st==='missing')spMissing.push(id);if(st==='repeated')repeated.push(id);});return{missing:missing,spMissing:spMissing,repeated:repeated};}
 function openQRModal(){
   var a=alb();if(!a)return;var s=stats(a);var d=buildShareData(a);
-  var payload={v:1,n:a.name,t:s.total,nm:d.missing,sm:d.spMissing,r:d.repeated};
-  var enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  if(enc.length>1500){payload={v:1,n:a.name,t:s.total,nm:d.missing.slice(0,100),sm:d.spMissing.slice(0,20),r:d.repeated.slice(0,20),trunc:1};enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));}
-  var url=location.origin+location.pathname+'?share='+enc;
+  // Compact format: n=name|t=total|m=missing csv|s=special missing csv|r=repeated csv
+  var compact=a.name+'|'+s.total+'|'+d.missing.join(',')+'|'+d.spMissing.join(',')+'|'+d.repeated.join(',');
+  var enc=btoa(unescape(encodeURIComponent(compact))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  var url=location.origin+location.pathname+'?s='+enc;
   window._surl=url;window._salb=a;
   el('qr-sub').textContent=a.name+' - '+s.ms+' faltantes';
   el('qr-wrap').innerHTML='';
@@ -660,13 +660,35 @@ function initApp(){
 }
 
 // Check for public share URL FIRST — if present, skip auth entirely
+var shareCompact=new URLSearchParams(location.search).get('s');
 var shareParam=new URLSearchParams(location.search).get('share');
-if(shareParam){
+if(shareCompact||shareParam){
   // Read-only public view: never touch Supabase, never show nav, never check session
   el('loading').classList.add('hide');
   el('app').style.display='block';
   el('main-nav').style.display='none'; // hide entire nav bar — no account, no buttons, no logout
-  try{renderPublic(JSON.parse(decodeURIComponent(escape(atob(shareParam)))));}catch(e){}
+  var parsedOk=false;
+  try{
+    if(shareCompact){
+      var b64=shareCompact.replace(/-/g,'+').replace(/_/g,'/');
+      while(b64.length%4)b64+='=';
+      var compact=decodeURIComponent(escape(atob(b64)));
+      var parts=compact.split('|');
+      var n=parts[0],t=parseInt(parts[1])||0;
+      var nm=parts[2]?parts[2].split(','):[];
+      var sm=parts[3]?parts[3].split(','):[];
+      var r=parts[4]?parts[4].split(','):[];
+      renderPublic({n:n,t:t,nm:nm,sm:sm,r:r});
+      parsedOk=true;
+    } else if(shareParam){
+      renderPublic(JSON.parse(decodeURIComponent(escape(atob(shareParam)))));
+      parsedOk=true;
+    }
+  }catch(e){console.error('share parse error:',e);}
+  if(!parsedOk){
+    el('pub-title').textContent='No se pudo cargar la lista';
+    el('pub-sub').textContent='El link puede estar incompleto. Pedile a tu amigo que lo reenvie.';
+  }
   showView('view-public');
 } else {
   initApp();
