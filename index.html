@@ -322,7 +322,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
       </div>
     </div>
     <div class="field" id="f-total"><label>Cantidad de laminas normales</label><input id="inp-total" type="number" placeholder="Ej: 200" min="1" max="3000"></div>
-    <div class="field" id="f-letters" style="display:none"><label>Letras (separadas por coma)</label><input id="inp-letters" placeholder="Ej: A, B, C, D, E..."></div>
+    <div class="field" id="f-letters" style="display:none"><label>Letras del album</label><input id="inp-letters" placeholder="Ej: A-Z  o  A, B, C, D"><p style="font-size:11px;color:var(--muted);margin-top:4px">Escribi un rango (A-P) o las letras separadas por coma.</p></div>
     <div class="field">
       <div class="toggle-row" onclick="toggleEsp()"><div><div class="toggle-label">Tiene laminas especiales?</div><div class="toggle-sub">Holograficas, doradas, plateadas...</div></div><div class="toggle-sw" id="esp-sw"></div></div>
       <div class="esp-box" id="esp-box">
@@ -334,7 +334,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
           </div>
         </div>
         <div class="field" id="f-sp-total"><label>Cantidad de especiales</label><input id="inp-sp-total" type="number" placeholder="Ej: 20" min="1" max="500"></div>
-        <div class="field" id="f-sp-letters" style="display:none"><label>Letras de las especiales</label><input id="inp-sp-letters" placeholder="Ej: A, B, C, D"></div>
+        <div class="field" id="f-sp-letters" style="display:none"><label>Letras de las especiales</label><input id="inp-sp-letters" placeholder="Ej: A-P  o  A, B, C, D"><p style="font-size:11px;color:var(--muted);margin-top:4px">Escribi un rango (A-P) o las letras separadas por coma.</p></div>
       </div>
     </div>
     <div class="mactions"><button class="btn" onclick="closeModal('modal-new')">Cancelar</button><button class="btn btn-primary" onclick="createAlbum()">Crear album</button></div>
@@ -356,7 +356,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
       <div class="field"><label>Cambiar numeracion</label><div class="num-toggle" id="edit-sp-fmt"><button class="num-opt" data-fmt="number" onclick="changeSpFmt(this)"><span class="num-opt-ico">1 2 3</span><div class="num-opt-name">Numeros</div></button><button class="num-opt" data-fmt="letter" onclick="changeSpFmt(this)"><span class="num-opt-ico">A B C</span><div class="num-opt-name">Letras</div></button></div></div>
       <div class="field"><div style="display:flex;gap:8px;margin-bottom:5px"><input id="edit-add-sp" type="number" placeholder="Cantidad" min="1" style="flex:1"><button class="btn btn-sm btn-primary" onclick="modIds('special','add')">+ Agregar</button><button class="btn btn-sm btn-danger" onclick="modIds('special','remove')">- Borrar</button></div><p id="info-sp" style="font-size:11px;color:var(--muted)">-</p></div>
     </div>
-    <div class="mactions"><button class="btn" onclick="closeModal('modal-edit')">Cerrar</button></div>
+    <div class="mactions"><button class="btn btn-success btn-full" onclick="closeModal('modal-edit')">&#10003; Listo, guardado</button></div>
   </div>
 </div>
 
@@ -432,7 +432,7 @@ function toast(m,d){d=d||2000;var e=el('toast');e.textContent=m;e.classList.add(
 function closeModal(id){el(id).classList.remove('open');}
 function openModal(id){el(id).classList.add('open');}
 function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');el('nav-back').style.display=id==='view-home'?'none':'inline-flex';el('btn-new').style.display=id==='view-home'?'inline-flex':'none';}
-function goHome(){aid=null;renderHome();showView('view-home');}
+function goHome(){aid=null;renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
 function finishAndGoHome(){
   var a=alb();
   if(a){
@@ -474,7 +474,13 @@ function loadAlbums(){
     setSyncing(false);
     if(r.error){toast('Error cargando');console.error(r.error);return;}
     albums=(r.data||[]).map(mapAlbum);
-    renderHome();showView('view-home');
+    renderHome();
+    var hashMatch=location.hash.match(/#a=([a-zA-Z0-9-]+)/);
+    if(hashMatch&&albums.some(function(a){return a.id===hashMatch[1];})){
+      openAlbum(hashMatch[1]);
+    } else {
+      showView('view-home');
+    }
   });
 }
 function dbSave(a){
@@ -505,7 +511,27 @@ function openNewModal(){newCover=null;fmtN='number';fmtSp='number';hasEsp=false;
 function previewCover(inp,prevId,hintId){var f=inp.files[0];if(!f)return;var img=new Image();var r=new FileReader();r.onload=function(e){img.onload=function(){var MAX=400;var w=img.width,h=img.height;if(w>MAX||h>MAX){var ratio=Math.min(MAX/w,MAX/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}var c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);var b64=c.toDataURL('image/jpeg',0.75);el(prevId).src=b64;el(prevId).style.display='block';el(hintId).style.display='none';if(inp.id==='cover-input')newCover=b64;else editCover=b64;};img.src=e.target.result;};r.readAsDataURL(f);}
 function selFmt(btn,sec){if(sec==='normal')fmtN=btn.dataset.fmt;else fmtSp=btn.dataset.fmt;btn.closest('.num-toggle').querySelectorAll('.num-opt').forEach(function(b){b.classList.toggle('sel',b===btn);});if(sec==='normal'){el('f-total').style.display=fmtN==='number'?'':'none';el('f-letters').style.display=fmtN==='letter'?'':'none';}else{el('f-sp-total').style.display=fmtSp==='number'?'':'none';el('f-sp-letters').style.display=fmtSp==='letter'?'':'none';}}
 function toggleEsp(){hasEsp=!hasEsp;el('esp-sw').classList.toggle('on',hasEsp);el('esp-box').classList.toggle('show',hasEsp);}
-function genIds(fmt,total,letRaw,prefix){prefix=prefix||'';if(fmt==='number')return Array.from({length:total},function(_,i){return prefix+(i+1);});if(letRaw&&letRaw.trim())return letRaw.split(',').map(function(s){return s.trim();}).filter(Boolean);return Array.from({length:26},function(_,i){return String.fromCharCode(65+i);});}
+function genIds(fmt,total,letRaw,prefix){
+  prefix=prefix||'';
+  if(fmt==='number')return Array.from({length:total},function(_,i){return prefix+(i+1);});
+  if(letRaw&&letRaw.trim()){
+    var raw=letRaw.trim();
+    // Support range format: A-P (single letters only)
+    var rangeMatch=raw.match(/^([A-Za-z])\s*-\s*([A-Za-z])$/);
+    if(rangeMatch){
+      var startC=rangeMatch[1].toUpperCase().charCodeAt(0);
+      var endC=rangeMatch[2].toUpperCase().charCodeAt(0);
+      if(endC>=startC){
+        var out=[];
+        for(var c=startC;c<=endC;c++)out.push(String.fromCharCode(c));
+        return out;
+      }
+    }
+    // Fallback: comma-separated list
+    return raw.split(',').map(function(s){return s.trim();}).filter(Boolean);
+  }
+  return Array.from({length:26},function(_,i){return String.fromCharCode(65+i);});
+}
 function createAlbum(){
   var name=el('inp-name').value.trim();if(!name){toast('Escribe el nombre del album');return;}
   var normalIds=genIds(fmtN,parseInt(el('inp-total').value)||0,el('inp-letters').value);if(!normalIds.length){toast('Agrega la cantidad de laminas');return;}
@@ -517,7 +543,7 @@ function createAlbum(){
 }
 
 // ALBUM DETAIL
-function openAlbum(id){aid=id;filN='all';filSp='all';vm='grid';albTab='normal';showView('view-album');renderAlbum();}
+function openAlbum(id){aid=id;filN='all';filSp='all';vm='grid';albTab='normal';showView('view-album');renderAlbum();try{history.replaceState(null,'','#a='+id);}catch(e){}}
 function setAlbumTab(t){albTab=t;el('tab-normal').classList.toggle('on',t==='normal');el('tab-special').classList.toggle('on',t==='special');el('sec-normal').style.display=t==='normal'?'':'none';el('sec-special').style.display=t==='special'?'':'none';}
 function quickFilter(f){var sec=albTab==='special'?'special':'normal';setFilter(f,null,sec);var filtersEl=el('filters-'+sec);if(filtersEl){filtersEl.querySelectorAll('.pill').forEach(function(b){b.classList.toggle('on',b.textContent.toLowerCase().indexOf(f==='all'?'toda':f==='have'?'tengo':f==='missing'?'faltan':'repet')>=0);});}}
 function renderAlbum(){
