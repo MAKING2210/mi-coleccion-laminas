@@ -303,6 +303,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div id="sg-special" class="sg"></div>
         <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = cambiar estado - Toque largo = nota</p>
       </div>
+
+      <div style="display:flex;gap:8px;margin-top:1.5rem;margin-bottom:1rem">
+        <button class="btn btn-success btn-full" onclick="finishAndGoHome()">✓ Listo, guardado — volver al inicio</button>
+      </div>
     </div>
   </div>
 
@@ -425,6 +429,18 @@ function closeModal(id){el(id).classList.remove('open');}
 function openModal(id){el(id).classList.add('open');}
 function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');el('nav-back').style.display=id==='view-home'?'none':'inline-flex';el('btn-new').style.display=id==='view-home'?'inline-flex':'none';}
 function goHome(){aid=null;renderHome();showView('view-home');}
+function finishAndGoHome(){
+  var a=alb();
+  if(a){
+    clearTimeout(_saveTimer);
+    setSyncing(true);
+    dbSave(a);
+    toast('✅ Guardado correctamente');
+    setTimeout(function(){goHome();},600);
+  } else {
+    goHome();
+  }
+}
 function setSyncing(v){el('sync-dot').classList.toggle('syncing',v);}
 function alb(){return albums.find(function(a){return a.id===aid;});}
 
@@ -637,6 +653,12 @@ function initApp(){
 var shareParam=new URLSearchParams(location.search).get('share');
 if(shareParam){
   el('loading').classList.add('hide');el('app').style.display='block';
+  // Hide all account/edit controls — this is a read-only public view
+  el('sync-dot').style.display='none';
+  el('nav-user').style.display='none';
+  el('nav-back').style.display='none';
+  el('btn-new').style.display='none';
+  document.querySelector('.nav-right button[onclick="logout()"]').style.display='none';
   try{renderPublic(JSON.parse(decodeURIComponent(escape(atob(shareParam)))));}catch(e){}
   showView('view-public');
 } else {
