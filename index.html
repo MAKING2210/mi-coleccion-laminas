@@ -225,13 +225,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 
   <div id="view-home" class="view active">
     <div class="wrap">
-      <div class="home-top"><h2 id="greeting">Mis albumes</h2><p>Tu coleccion personal</p></div>
-      <div class="stats-row">
-        <div class="sc"><div class="sc-n" id="gs-a">0</div><div class="sc-l">Albums</div></div>
-        <div class="sc"><div class="sc-n" id="gs-h">0</div><div class="sc-l">Tengo</div></div>
-        <div class="sc"><div class="sc-n" id="gs-m">0</div><div class="sc-l">Faltan</div></div>
-      </div>
-      <div class="gbar"><div class="gbar-f" id="gbar" style="width:0%"></div></div>
+      <div class="home-top"><h2 id="greeting">Mis albumes</h2><p id="home-count">Tu coleccion personal</p></div>
       <div class="sec-hdr">Albums</div>
       <div class="albums-list" id="albums-list"></div>
     </div>
@@ -496,10 +490,14 @@ function stats(a){var hv=0,rp=0,ms=0,sp=0;[].concat(a.normalIds||[]).concat(a.sp
 
 // HOME
 function renderHome(){
-  var list=el('albums-list');var th=0,tm=0;
-  if(!albums.length){list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg><h3>Sin albumes aun</h3><p>Toca + Album para empezar</p></div>';['gs-a','gs-h','gs-m'].forEach(function(id){el(id).textContent=0;});el('gbar').style.width='0%';return;}
-  list.innerHTML=albums.map(function(a){var s=stats(a);th+=s.hv;tm+=s.ms;var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=a.cover?'<img src="'+a.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#128218;</div>';return'<div class="al-card" onclick="openAlbum(\''+a.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+a.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+(a.hasSpecial?' - '+a.specialIds.length+' esp':'')+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');
-  el('gs-a').textContent=albums.length;el('gs-h').textContent=th;el('gs-m').textContent=tm;el('gbar').style.width=(th+tm>0?Math.round(th/(th+tm)*100):0)+'%';
+  var list=el('albums-list');
+  if(!albums.length){
+    list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg><h3>Sin albumes aun</h3><p>Toca + Album para empezar</p></div>';
+    el('home-count').textContent='Tu coleccion personal';
+    return;
+  }
+  list.innerHTML=albums.map(function(a){var s=stats(a);var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=a.cover?'<img src="'+a.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#128218;</div>';return'<div class="al-card" onclick="openAlbum(\''+a.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+a.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+(a.hasSpecial?' - '+a.specialIds.length+' esp':'')+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');
+  el('home-count').textContent=albums.length+(albums.length===1?' album':' albumes');
 }
 
 // NEW ALBUM
