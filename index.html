@@ -178,8 +178,51 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 .chips-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;color:var(--txt)}
+/* TAZOS MODULE */
+.section-tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1rem}
+.section-tab{padding:12px 16px;border:none;background:none;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.section-tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+.tazo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:10px;margin-bottom:.5rem}
+.tazo{width:72px;height:72px;border-radius:50%;border:2.5px solid var(--bdr);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .13s;position:relative;background:var(--surf);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;overflow:hidden;box-shadow:0 1px 3px rgba(74,52,32,.1)}
+.tazo:hover{transform:scale(1.08);z-index:2}
+.tazo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tazo-num{font-size:11px;font-weight:700;color:var(--muted)}
+.tazo.ts-have{border-color:#639922;box-shadow:0 0 0 2px #639922}
+.tazo.ts-rep{border-color:var(--amber);box-shadow:0 0 0 2px var(--amber)}
+.tazo-badge{position:absolute;bottom:2px;right:2px;font-size:7px;font-weight:700;padding:1px 4px;border-radius:8px;color:#fff;line-height:1.4}
+.tazo-badge.ok{background:#639922}
+.tazo-badge.rep{background:var(--amber)}
+.tazo-img-up{width:80px;height:80px;border-radius:50%;border:2px dashed var(--bdr-md);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;background:var(--bg);flex-shrink:0}
+.tazo-img-up img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tazo-img-up input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.tazo-img-hint{font-size:18px;color:var(--lt)}
+@keyframes tazo-pulse{0%{transform:scale(1)}50%{transform:scale(.88)}100%{transform:scale(1)}}
+.tazo-pulse{animation:tazo-pulse .18s ease}
+@media(max-width:480px){.tazo-grid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr))}.tazo{width:62px;height:62px}}
+
 .toast{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%) translateY(16px);background:#161B26;color:#fff;padding:9px 17px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:all .22s;z-index:400;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* BOTTOM TABS */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--bdr);display:flex;z-index:49;padding-bottom:env(safe-area-inset-bottom)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border:none;background:none;cursor:pointer;font-family:var(--f-body);font-size:10px;color:var(--muted);gap:3px;transition:color .13s}
+.tab-btn.on{color:var(--blue)}
+.tab-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.tab-btn span{font-size:10px;font-weight:500}
+body{padding-bottom:60px}
+/* TAZOS */
+.tazo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-bottom:.5rem}
+.tazo{width:64px;height:64px;border-radius:50%;border:2.5px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .11s;position:relative;background:var(--surf);user-select:none;-webkit-user-select:none;touch-action:pan-y;box-shadow:0 1px 3px rgba(74,52,32,.1);overflow:hidden}
+.tazo:hover{transform:scale(1.08);z-index:2}
+.tazo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tazo-num{font-size:11px;font-weight:700;color:var(--muted)}
+.tazo-badge{position:absolute;bottom:2px;right:2px;font-size:7px;font-weight:700;padding:1px 3px;border-radius:3px;color:#fff;line-height:1.3}
+.tazo-badge-ok{background:#639922}
+.tazo-badge-rep{background:var(--amber)}
+.ts-have{border-color:#639922;box-shadow:0 0 0 2px rgba(99,153,34,.2)}
+.ts-rep{border-color:var(--amber);box-shadow:0 0 0 2px rgba(186,117,23,.2)}
+@keyframes tazo-pulse{0%{transform:scale(1)}50%{transform:scale(.88)}100%{transform:scale(1)}}
+.tazo-pulse{animation:tazo-pulse .18s ease}
+
 @media(max-width:480px){.ms-grid{grid-template-columns:repeat(2,1fr)}.sg{grid-template-columns:repeat(auto-fill,minmax(50px,1fr))}.lam{width:50px;height:62px}.pub-hero{flex-direction:column;text-align:center}.ah-btns .btn-sm{font-size:11px;padding:4px 8px}}
 </style>
 </head>
@@ -220,15 +263,38 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
       <span class="nav-user" id="nav-user" onclick="openNameModal()" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" title="Tocar para cambiar tu nombre"></span>
       <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goHome()">← Inicio</button>
       <button class="btn btn-sm btn-primary" id="btn-new" onclick="openNewModal()">+ Album</button>
+      <button class="btn btn-sm btn-primary" id="btn-new-tazo" style="display:none" onclick="openNewTazoModal()">+ Tazos</button>
       <button class="btn btn-sm" id="btn-logout" onclick="logout()">salir</button>
     </div>
   </nav>
 
+  <div class="tab-bar" id="tab-bar">
+    <button class="tab-btn on" id="tab-albums" onclick="switchSection('albums')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+      <span>Albums</span>
+    </button>
+    <button class="tab-btn" id="tab-tazos" onclick="switchSection('tazos')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+      <span>Tazos</span>
+    </button>
+  </div>
+
+  <div class="section-tabs" id="section-tabs">
+    <button class="section-tab on" id="tab-albums" onclick="switchSection('albums')">📚 Albums</button>
+    <button class="section-tab" id="tab-tazos" onclick="switchSection('tazos')">⭕ Tazos</button>
+  </div>
+
   <div id="view-home" class="view active">
     <div class="wrap">
       <div class="home-top"><h2 id="greeting">Mis albumes</h2><p id="home-count">Tu coleccion personal</p></div>
-      <div class="sec-hdr">Albums</div>
-      <div class="albums-list" id="albums-list"></div>
+      <div id="section-albums">
+        <div class="sec-hdr">Albums</div>
+        <div class="albums-list" id="albums-list"></div>
+      </div>
+      <div id="section-tazos" style="display:none">
+        <div class="sec-hdr">Colecciones de tazos</div>
+        <div class="albums-list" id="tazos-list"></div>
+      </div>
     </div>
   </div>
 
@@ -299,6 +365,94 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 
       <div style="display:flex;gap:8px;margin-top:1.5rem;margin-bottom:1rem">
         <button class="btn btn-success btn-full" onclick="finishAndGoHome()">✓ Listo, guardado — volver al inicio</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-tazo-detail" class="view">
+    <div class="wrap">
+      <div class="ah">
+        <div class="ah-top">
+          <div id="tazo-cover-wrap"></div>
+          <div class="ah-meta">
+            <h2 id="tazo-ah-name">-</h2>
+            <p id="tazo-ah-sub">-</p>
+            <div class="ah-btns">
+              <button class="btn btn-sm" onclick="openTazoQR()">QR</button>
+              <button class="btn btn-sm" onclick="openEditTazoModal()">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="openConfirmDeleteTazo()">Eliminar</button>
+            </div>
+          </div>
+        </div>
+        <div class="prog-row"><div class="prog-t"><div class="prog-f" id="tazo-bar" style="width:0%"></div></div><div class="prog-pct" id="tazo-pct">0%</div></div>
+        <div class="ms-grid">
+          <div class="msc"><div class="msc-n" id="tazo-ms-t" style="color:var(--blue)">0</div><div class="msc-l">Total</div></div>
+          <div class="msc"><div class="msc-n" id="tazo-ms-h" style="color:#2E7D32">0</div><div class="msc-l">Tengo</div></div>
+          <div class="msc"><div class="msc-n" id="tazo-ms-m" style="color:var(--err)">0</div><div class="msc-l">Faltan</div></div>
+          <div class="msc"><div class="msc-n" id="tazo-ms-r" style="color:var(--amber)">0</div><div class="msc-l">Repetidos</div></div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="filters" id="tazo-filters">
+          <button class="pill on" onclick="setTazoFilter('all',this)">Todos</button>
+          <button class="pill" onclick="setTazoFilter('missing',this)">Me faltan</button>
+          <button class="pill" onclick="setTazoFilter('have',this)">Tengo</button>
+          <button class="pill" onclick="setTazoFilter('repeated',this)">Repetidos</button>
+        </div>
+      </div>
+      <div id="tazo-grid" class="tazo-grid"></div>
+      <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = tengo/no tengo - Toque largo = repetido o imagen</p>
+      <div style="display:flex;gap:8px;margin-top:1.5rem;margin-bottom:1rem">
+        <button class="btn btn-success btn-full" onclick="finishTazoAndGoHome()">✓ Listo, guardado — volver al inicio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAZOS HOME -->
+  <div id="view-tazos-home" class="view">
+    <div class="wrap">
+      <div class="home-top"><h2>Mis tazos</h2><p id="tazos-count">Tu coleccion de tazos</p></div>
+      <div class="sec-hdr">Colecciones</div>
+      <div class="albums-list" id="tazos-list"></div>
+    </div>
+  </div>
+
+  <!-- TAZO DETAIL -->
+  <div id="view-tazo-detail" class="view">
+    <div class="wrap">
+      <div class="ah">
+        <div class="ah-top">
+          <div id="tazo-cover-wrap"></div>
+          <div class="ah-meta">
+            <h2 id="tazo-name">-</h2>
+            <p id="tazo-sub">-</p>
+            <div class="ah-btns">
+              <button class="btn btn-sm" onclick="openTazoQR()">QR</button>
+              <button class="btn btn-sm" onclick="openEditTazoModal()">Editar</button>
+              <button class="btn btn-sm btn-danger" onclick="openConfirmDeleteTazo()">Eliminar</button>
+            </div>
+          </div>
+        </div>
+        <div class="prog-row"><div class="prog-t"><div class="prog-f" id="tazo-bar" style="width:0%"></div></div><div class="prog-pct" id="tazo-pct">0%</div></div>
+        <div class="ms-grid">
+          <div class="msc"><div class="msc-n" id="tazo-ms-t" style="color:var(--blue)">0</div><div class="msc-l">Total</div></div>
+          <div class="msc"><div class="msc-n" id="tazo-ms-h" style="color:#2E7D32">0</div><div class="msc-l">Tengo</div></div>
+          <div class="msc"><div class="msc-n" id="tazo-ms-m" style="color:var(--err)">0</div><div class="msc-l">Faltan</div></div>
+          <div class="msc"><div class="msc-n" id="tazo-ms-r" style="color:var(--amber)">0</div><div class="msc-l">Repetidos</div></div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="filters" id="tazo-filters">
+          <button class="pill on" onclick="setTazoFilter('all',this)">Todos</button>
+          <button class="pill" onclick="setTazoFilter('missing',this)">Me faltan</button>
+          <button class="pill" onclick="setTazoFilter('have',this)">Tengo</button>
+          <button class="pill" onclick="setTazoFilter('repeated',this)">Repetidos</button>
+        </div>
+      </div>
+      <div id="tazo-grid" class="tazo-grid"></div>
+      <p style="font-size:11px;color:var(--lt);text-align:center;margin-top:4px">Toque = tengo/no tengo · Toque largo = opciones</p>
+      <div style="display:flex;gap:8px;margin-top:1.5rem;margin-bottom:1rem">
+        <button class="btn btn-success btn-full" onclick="finishTazoAndGoHome()">&#10003; Listo, guardado — volver</button>
       </div>
     </div>
   </div>
@@ -414,6 +568,86 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
   </div>
 </div>
 
+<!-- NUEVA COLECCION TAZOS -->
+<div class="overlay" id="modal-new-tazo">
+  <div class="modal">
+    <h2>Nueva coleccion de tazos</h2>
+    <div class="field"><label>Imagen de tapa</label>
+      <div class="cover-up"><input type="file" accept="image/*" id="tazo-cover-input" onchange="previewCover(this,'tazo-cover-prev','tazo-cover-hint')"><img id="tazo-cover-prev" alt=""><div id="tazo-cover-hint" class="cover-up-hint"><strong>&#128247;</strong>Subir imagen de tapa</div></div>
+    </div>
+    <div class="field"><label>Nombre de la coleccion</label><input id="tazo-inp-name" placeholder="Ej: Tazos Pokemon, DBZ Metaliz..."></div>
+    <div class="field"><label>Cantidad de tazos</label><input id="tazo-inp-total" type="number" placeholder="Ej: 60" min="1" max="500"></div>
+    <div class="mactions"><button class="btn" onclick="closeModal('modal-new-tazo')">Cancelar</button><button class="btn btn-primary" onclick="createTazoCollection()">Crear</button></div>
+  </div>
+</div>
+
+<!-- EDITAR COLECCION TAZOS -->
+<div class="overlay" id="modal-edit-tazo">
+  <div class="modal">
+    <h2>Editar coleccion</h2>
+    <div class="field"><label>Imagen de tapa</label>
+      <div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewCover(this,'tazo-edit-prev','tazo-edit-hint')"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>&#128247;</strong>Cambiar imagen</div></div>
+    </div>
+    <div class="field"><label>Nombre</label><input id="tazo-edit-name"></div>
+    <button class="btn btn-success btn-full" onclick="saveTazoEdit()" style="margin-bottom:1rem">&#10003; Guardar nombre e imagen</button>
+    <div style="border-top:1px solid var(--bdr);margin:4px 0 14px"></div>
+    <div class="field"><label>Agregar o quitar tazos al final</label>
+      <div style="display:flex;gap:8px;margin-bottom:5px">
+        <input id="tazo-edit-qty" type="number" placeholder="Cantidad" min="1" style="flex:1">
+        <button class="btn btn-sm btn-primary" onclick="modTazos('add')">+ Agregar</button>
+        <button class="btn btn-sm btn-danger" onclick="modTazos('remove')">- Borrar</button>
+      </div>
+      <p id="tazo-info" style="font-size:11px;color:var(--muted)">-</p>
+    </div>
+    <div class="mactions"><button class="btn btn-success btn-full" onclick="closeModal('modal-edit-tazo')">&#10003; Listo, guardado</button></div>
+  </div>
+</div>
+
+<!-- IMAGEN DE TAZO INDIVIDUAL -->
+<div class="overlay" id="modal-tazo-img">
+  <div class="modal" style="max-width:320px;text-align:center">
+    <h2>Tazo <span id="tazo-img-id">-</span></h2>
+    <div style="display:flex;justify-content:center;margin-bottom:1rem">
+      <div class="tazo-img-up" id="tazo-img-upload-wrap">
+        <input type="file" accept="image/*" onchange="saveTazoImg(this)">
+        <img id="tazo-img-preview" alt="" style="display:none">
+        <span class="tazo-img-hint" id="tazo-img-hint">&#128247;</span>
+      </div>
+    </div>
+    <div class="mactions" style="justify-content:center">
+      <button class="btn btn-danger btn-sm" id="tazo-img-del-btn" onclick="deleteTazoImg()" style="display:none">Quitar imagen</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-tazo-img')">Listo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MENU TAZO (toque largo) -->
+<div class="overlay" id="modal-tazo-menu">
+  <div class="modal" style="max-width:280px;text-align:center">
+    <h2>Tazo <span id="tazo-menu-id">-</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Estado: <span id="tazo-menu-state">-</span></p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary btn-full" onclick="tazoMenuRepeated()">Marcar como repetido</button>
+      <button class="btn btn-full" onclick="tazoMenuImg()">Ver / cambiar imagen</button>
+      <button class="btn btn-full" onclick="closeModal('modal-tazo-menu')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ELIMINAR COLECCION TAZOS -->
+<div class="overlay" id="modal-del-tazo">
+  <div class="modal confirm-modal">
+    <h2>Eliminar coleccion?</h2>
+    <p id="tazo-del-msg">Esta accion no se puede deshacer.</p>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <button class="btn" onclick="closeModal('modal-del-tazo')">Cancelar</button>
+      <button class="btn btn-danger" onclick="doDeleteTazo()">Si, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- REP MODAL TAZOS (reutiliza el mismo de laminas) -->
+
 <div class="overlay" id="modal-forgot">
   <div class="modal" style="max-width:320px">
     <h2>Recuperar contrasena</h2>
@@ -428,6 +662,71 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
     <h2>Tu nombre</h2>
     <div class="field"><label>Como te queres llamar en la app</label><input id="edit-display-name" placeholder="Ej: Mario, El coleccionista..."><div class="field-error" id="name-error"></div></div>
     <div class="mactions"><button class="btn" onclick="closeModal('modal-name')">Cancelar</button><button class="btn btn-primary" onclick="saveDisplayName()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- NUEVO TAZOS -->
+<div class="overlay" id="modal-new-tazo">
+  <div class="modal">
+    <h2>Nueva coleccion de tazos</h2>
+    <div class="field"><label>Imagen de portada</label><div class="cover-up"><input type="file" accept="image/*" id="tazo-cover-input" onchange="previewCover(this,'tazo-cover-prev','tazo-cover-hint')"><img id="tazo-cover-prev" alt=""><div id="tazo-cover-hint" class="cover-up-hint"><strong>📷</strong>Subir imagen de portada</div></div></div>
+    <div class="field"><label>Nombre de la coleccion</label><input id="tazo-inp-name" placeholder="Ej: Tazos Pokemon Gen 1, DBZ Metaliz..."></div>
+    <div class="field"><label>Cantidad de tazos</label><input id="tazo-inp-total" type="number" placeholder="Ej: 60" min="1" max="500"></div>
+    <div class="mactions"><button class="btn" onclick="closeModal('modal-new-tazo')">Cancelar</button><button class="btn btn-primary" onclick="createTazoCollection()">Crear coleccion</button></div>
+  </div>
+</div>
+
+<!-- EDITAR TAZOS -->
+<div class="overlay" id="modal-edit-tazo">
+  <div class="modal">
+    <h2>Editar coleccion</h2>
+    <div class="field"><label>Imagen de portada</label><div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewCover(this,'tazo-edit-prev','tazo-edit-hint')"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>📷</strong>Cambiar imagen</div></div></div>
+    <div class="field"><label>Nombre</label><input id="tazo-edit-name"></div>
+    <button class="btn btn-success btn-full" onclick="saveTazoEdit()" style="margin-bottom:1rem">💾 Guardar nombre e imagen</button>
+    <div style="border-top:1px solid var(--bdr);margin:4px 0 14px"></div>
+    <div class="field"><label>Agregar o quitar tazos al final</label><div style="display:flex;gap:8px"><input id="tazo-edit-qty" type="number" placeholder="Cantidad" min="1" style="flex:1"><button class="btn btn-sm btn-primary" onclick="modTazos('add')">+ Agregar</button><button class="btn btn-sm btn-danger" onclick="modTazos('remove')">- Borrar</button></div><p id="tazo-info" style="font-size:11px;color:var(--muted);margin-top:4px">-</p></div>
+    <div class="mactions"><button class="btn btn-success btn-full" onclick="closeModal('modal-edit-tazo')">✓ Listo, guardado</button></div>
+  </div>
+</div>
+
+<!-- IMAGEN TAZO -->
+<div class="overlay" id="modal-tazo-img">
+  <div class="modal" style="max-width:320px;text-align:center">
+    <h2>Tazo <span id="tazo-img-id">-</span></h2>
+    <div class="field"><label>Imagen de este tazo</label><div class="cover-up" style="height:140px"><input type="file" accept="image/*" id="tazo-img-input" onchange="previewTazoImg(this)"><img id="tazo-img-prev" alt="" style="display:none;width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto"><div id="tazo-img-hint" class="cover-up-hint"><strong>📷</strong>Foto del tazo</div></div></div>
+    <div class="mactions"><button class="btn" onclick="closeModal('modal-tazo-img')">Cancelar</button><button class="btn btn-primary" onclick="saveTazoImg()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- MENU TAZO (toque largo) -->
+<div class="overlay" id="modal-tazo-menu">
+  <div class="modal" style="max-width:280px;text-align:center">
+    <h2>Tazo <span id="tazo-menu-id">-</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Estado: <span id="tazo-menu-state">-</span></p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-primary btn-full" onclick="tazoMenuRepeated()">Marcar como repetido</button>
+      <button class="btn btn-full" onclick="tazoMenuImg()">Cambiar imagen</button>
+      <button class="btn btn-full" onclick="closeModal('modal-tazo-menu')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPETIDO TAZO -->
+<div class="overlay" id="modal-tazo-rep">
+  <div class="modal" style="max-width:280px;text-align:center">
+    <h2>Tazo <span id="tazo-rep-id">-</span></h2>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:1rem">Cuantos repetidos tenes?</p>
+    <input class="rep-num-input" id="tazo-rep-qty" type="number" min="2" max="99" value="2">
+    <div style="display:flex;gap:8px;justify-content:center"><button class="btn" onclick="closeModal('modal-tazo-rep')">Cancelar</button><button class="btn btn-primary" onclick="saveTazoRepeated()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE TAZO -->
+<div class="overlay" id="modal-del-tazo">
+  <div class="modal confirm-modal">
+    <h2>Eliminar coleccion?</h2>
+    <p id="del-tazo-msg">Esta accion no se puede deshacer.</p>
+    <div style="display:flex;gap:8px;justify-content:center"><button class="btn" onclick="closeModal('modal-del-tazo')">Cancelar</button><button class="btn btn-danger" onclick="doDeleteTazo()">Si, eliminar</button></div>
   </div>
 </div>
 
@@ -450,7 +749,7 @@ function toast(m,d){d=d||2000;var e=el('toast');e.textContent=m;e.classList.add(
 function closeModal(id){el(id).classList.remove('open');}
 function openModal(id){el(id).classList.add('open');}
 function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');el('nav-back').style.display=id==='view-home'?'none':'inline-flex';el('btn-new').style.display=id==='view-home'?'inline-flex':'none';}
-function goHome(){aid=null;renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+function goHome(){aid=null;el('section-tabs').style.display='';renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
 function finishAndGoHome(){
   var a=alb();
   if(a){
@@ -756,6 +1055,298 @@ function shareWA(){var a=window._salb||alb();if(!a)return;var d=buildShareData(a
 function renderPublic(d){var n=d.n||'',nm=d.nm||[],sm=d.sm||[],r=d.r||[],t=d.t||0;document.title=n+' - Lista de laminas';el('pub-title').textContent=n;var hv=t-nm.length-sm.length;el('pub-sub').textContent=hv+'/'+t+' laminas - '+(t>0?Math.round(hv/t*100):0)+'% completo';el('pub-missing').innerHTML='<div class="chips-box"><div class="chips-title">Me faltan normales ('+nm.length+')</div><div class="chips">'+nm.map(function(x){return'<span class="chip">'+x+'</span>';}).join('')+'</div></div>';el('pub-sp-missing').innerHTML=sm.length?'<div class="chips-box" style="background:linear-gradient(135deg,#f8f0ff,#eff8ff)"><div class="chips-title" style="color:var(--holo-a)">Especiales faltantes ('+sm.length+')</div><div class="chips">'+sm.map(function(x){return'<span class="chip">'+x+'</span>';}).join('')+'</div></div>':'';el('pub-repeated').innerHTML=r.length?'<div class="chips-box" style="border-color:rgba(186,117,23,.3)"><div class="chips-title" style="color:var(--amber)">Puedo intercambiar ('+r.length+')</div><div class="chips">'+r.map(function(x){return'<span class="chip">'+x+'</span>';}).join('')+'</div></div>':'';}
 
 // CLOSE MODALS ON BG CLICK
+// ═══════════════════════════════════════════════════════
+// TAZOS MODULE
+// ═══════════════════════════════════════════════════════
+var tazosCollections=[], taid=null, tazoFilter='all', _tazoPressTimer=null, _tazoMoved=false, _tazoStartX=0, _tazoStartY=0;
+var curTazoImgId=null, curTazoImgB64=null, tazoNewCover=null, tazoEditCover=null;
+
+// SECTION SWITCH
+var curSection='albums';
+function switchSection(sec){
+  curSection=sec;
+  el('section-albums').style.display=sec==='albums'?'':'none';
+  el('section-tazos').style.display=sec==='tazos'?'':'none';
+  el('tab-albums').classList.toggle('on',sec==='albums');
+  el('tab-tazos').classList.toggle('on',sec==='tazos');
+  el('btn-new').style.display=sec==='albums'&&el('view-home').classList.contains('active')?'inline-flex':'none';
+  el('btn-new-tazo').style.display=sec==='tazos'&&el('view-home').classList.contains('active')?'inline-flex':'none';
+  if(sec==='tazos'&&!tazosCollections.length) loadTazos();
+}
+
+// DB
+function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
+function loadTazos(){
+  if(!user)return;
+  setSyncing(true);
+  sb.from('tazos_collections').select('*').eq('user_id',user.id).order('created_at').then(function(r){
+    setSyncing(false);
+    if(r.error){toast('Error cargando tazos');return;}
+    tazosCollections=(r.data||[]).map(mapTazo);
+    renderTazosHome();
+  });
+}
+function dbSaveTazo(t){
+  if(!user||!sb)return;
+  setSyncing(true);
+  sb.from('tazos_collections').upsert({id:t.id,user_id:user.id,name:t.name,cover:t.cover||null,total:t.total,tazos:t.tazos||[],stickers:t.stickers||{},updated_at:new Date().toISOString()}).then(function(r){setSyncing(false);if(r.error){toast('Error guardando');console.error(r.error);}});
+}
+function dbDeleteTazo(id){if(!user||!sb)return;setSyncing(true);sb.from('tazos_collections').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);});}
+function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTimer=setTimeout(function(){dbSaveTazo(t);},800);}
+function tazoAlb(){return tazosCollections.find(function(t){return t.id===taid;});}
+
+// HOME TAZOS
+function renderTazosHome(){
+  var list=el('tazos-list');
+  if(!tazosCollections.length){
+    list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><h3>Sin colecciones de tazos</h3><p>Toca "+ Tazos" para empezar</p></div>';
+    return;
+  }
+  list.innerHTML=tazosCollections.map(function(t){
+    var stk=t.stickers||{};var hv=0,ms=0,rp=0;
+    (t.tazos||[]).forEach(function(id){var x=stk[id];var st=x?x.state:'missing';if(st==='have')hv++;else if(st==='repeated')rp++;else ms++;});
+    var total=(t.tazos||[]).length;var pct=total>0?Math.round(hv/total*100):0;
+    var cov=t.cover?'<img src="'+t.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph" style="border-radius:50%;font-size:22px">⭕</div>';
+    return'<div class="al-card" onclick="openTazoDetail(\''+t.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+t.name+'</div><div class="al-sub">'+hv+'/'+total+' - '+ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';
+  }).join('');
+}
+
+// NEW TAZO COLLECTION
+function openNewTazoModal(){
+  tazoNewCover=null;
+  ['tazo-inp-name','tazo-inp-total'].forEach(function(id){el(id).value='';});
+  el('tazo-cover-prev').style.display='none';el('tazo-cover-hint').style.display='block';el('tazo-cover-input').value='';
+  openModal('modal-new-tazo');
+}
+function createTazoCollection(){
+  var name=el('tazo-inp-name').value.trim();if(!name){toast('Escribe el nombre');return;}
+  var total=parseInt(el('tazo-inp-total').value)||0;if(!total){toast('Ingresa la cantidad');return;}
+  var tazos=Array.from({length:total},function(_,i){return String(i+1);});
+  var stickers={};tazos.forEach(function(id){stickers[id]={state:'missing',img:null,qty:0};});
+  var t={id:crypto.randomUUID(),name:name,cover:tazoNewCover||null,total:total,tazos:tazos,stickers:stickers};
+  tazosCollections.push(t);closeModal('modal-new-tazo');
+  dbSaveTazo(t);toast('Coleccion creada');openTazoDetail(t.id);
+}
+
+// TAZO DETAIL
+function openTazoDetail(id){
+  taid=id;tazoFilter='all';showView('view-tazo-detail');renderTazoDetail();
+  try{history.replaceState(null,'','#t='+id);}catch(e){}
+}
+function renderTazoDetail(){
+  var t=tazoAlb();if(!t)return;
+  var stk=t.stickers||{};var hv=0,ms=0,rp=0;
+  (t.tazos||[]).forEach(function(id){var x=stk[id];var st=x?x.state:'missing';if(st==='have')hv++;else if(st==='repeated')rp++;else ms++;});
+  var total=(t.tazos||[]).length;var pct=total>0?Math.round(hv/total*100):0;
+  el('tazo-ah-name').textContent=t.name;
+  el('tazo-ah-sub').textContent=total+' tazos en total';
+  el('tazo-bar').style.width=pct+'%';el('tazo-pct').textContent=pct+'%';
+  el('tazo-ms-t').textContent=total;el('tazo-ms-h').textContent=hv;el('tazo-ms-m').textContent=ms;el('tazo-ms-r').textContent=rp;
+  el('tazo-cover-wrap').innerHTML=t.cover?'<img src="'+t.cover+'" class="ah-cover" alt="">':'<div class="ah-cover-ph" style="border-radius:50%;font-size:28px">⭕</div>';
+  renderTazoGrid();
+}
+function setTazoFilter(f,btn){
+  tazoFilter=f;
+  el('tazo-filters').querySelectorAll('.pill').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  renderTazoGrid();
+}
+function renderTazoGrid(){
+  var t=tazoAlb();if(!t)return;
+  var stk=t.stickers||{};var grid=el('tazo-grid');var html='';
+  (t.tazos||[]).forEach(function(id){
+    var x=stk[id];var st=x?x.state:'missing';var img=x?x.img||null:null;var qty=x?x.qty||0:0;
+    if(tazoFilter!=='all'&&st!==tazoFilter)return;
+    var cls='tazo'+(st==='have'?' ts-have':st==='repeated'?' ts-rep':'');
+    var badge=st==='have'?'<span class="tazo-badge tazo-badge-ok">✓</span>':st==='repeated'?'<span class="tazo-badge tazo-badge-rep">'+(qty>0?'×'+qty:'×')+'</span>':'';
+    var inner=img?'<img src="'+img+'" alt="">':'<span class="tazo-num">'+id+'</span>';
+    var evts='onmousedown="tazoPressStart(\''+id+'\',this)" onmouseup="tazoPressEnd(\''+id+'\',this,event)" onmouseleave="clearTimeout(_tazoPressTimer)" ontouchstart="tazoPressStart(\''+id+'\',this,event);event.preventDefault()" ontouchmove="tazoCancelIfMoved(event)" ontouchend="tazoPressEnd(\''+id+'\',this,event)"';
+    html+='<div class="'+cls+'" '+evts+'>'+inner+badge+'</div>';
+  });
+  grid.innerHTML=html||'<p style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;grid-column:1/-1">Sin tazos con este filtro</p>';
+}
+
+// TAZO TAP / LONGPRESS
+function tazoPressStart(id,domEl,ev){
+  _tazoMoved=false;
+  if(ev&&ev.touches&&ev.touches[0]){_tazoStartX=ev.touches[0].clientX;_tazoStartY=ev.touches[0].clientY;}
+  _tazoPressTimer=setTimeout(function(){_tazoPressTimer=null;if(!_tazoMoved)openTazoMenu(id);},500);
+}
+function tazoCancelIfMoved(ev){
+  if(!ev.touches||!ev.touches[0])return;
+  var dx=Math.abs(ev.touches[0].clientX-_tazoStartX);var dy=Math.abs(ev.touches[0].clientY-_tazoStartY);
+  if(dx>10||dy>10){_tazoMoved=true;clearTimeout(_tazoPressTimer);_tazoPressTimer=null;}
+}
+function tazoPressEnd(id,domEl,ev){
+  if(_tazoMoved){_tazoMoved=false;return;}
+  if(_tazoPressTimer){clearTimeout(_tazoPressTimer);_tazoPressTimer=null;tapTazo(id,domEl);}
+  if(ev&&ev.cancelable)ev.preventDefault();
+}
+function tapTazo(id,domEl){
+  var t=tazoAlb();if(!t)return;if(!t.stickers)t.stickers={};
+  var x=t.stickers[id]||{state:'missing',img:null,qty:0};
+  var next=x.state==='missing'?'have':'missing';
+  t.stickers[id]=Object.assign({},x,{state:next,qty:next==='missing'?0:x.qty});
+  domEl.classList.add('tazo-pulse');setTimeout(function(){domEl.classList.remove('tazo-pulse');},200);
+  toast(next==='have'?'Lo tengo':'Sin marcar');
+  renderTazoGrid();renderTazoDetail();renderTazosHome();scheduleSaveTazo(t);
+}
+function openTazoMenu(id){
+  var t=tazoAlb();if(!t)return;
+  curTazoImgId=id;
+  var x=t.stickers&&t.stickers[id];
+  el('tazo-menu-id').textContent=id;
+  el('tazo-menu-state').textContent={have:'Tengo',repeated:'Repetido',missing:'Me falta'}[x?x.state:'missing'];
+  openModal('modal-tazo-menu');
+}
+function tazoMenuRepeated(){
+  closeModal('modal-tazo-menu');
+  el('tazo-rep-id').textContent=curTazoImgId;
+  var t=tazoAlb();var x=t&&t.stickers&&t.stickers[curTazoImgId];
+  el('tazo-rep-qty').value=x&&x.qty>=2?x.qty:2;
+  openModal('modal-tazo-rep');
+}
+function saveTazoRepeated(){
+  var t=tazoAlb();if(!t||!curTazoImgId)return;
+  var qty=parseInt(el('tazo-rep-qty').value)||2;if(qty<2){toast('Minimo 2');return;}
+  if(!t.stickers)t.stickers={};
+  var x=t.stickers[curTazoImgId]||{state:'missing',img:null,qty:0};
+  t.stickers[curTazoImgId]=Object.assign({},x,{state:'repeated',qty:qty});
+  closeModal('modal-tazo-rep');toast(qty+' repetidos');
+  renderTazoGrid();renderTazoDetail();renderTazosHome();scheduleSaveTazo(t);
+}
+function tazoMenuImg(){closeModal('modal-tazo-menu');el('tazo-img-id').textContent=curTazoImgId;curTazoImgB64=null;el('tazo-img-prev').style.display='none';el('tazo-img-hint').style.display='block';el('tazo-img-input').value='';openModal('modal-tazo-img');}
+function previewTazoImg(inp){
+  var f=inp.files[0];if(!f)return;
+  var img=new Image();var r=new FileReader();
+  r.onload=function(e){img.onload=function(){
+    var MAX=200;var w=img.width,h=img.height;
+    if(w>MAX||h>MAX){var ratio=Math.min(MAX/w,MAX/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}
+    var c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    curTazoImgB64=c.toDataURL('image/jpeg',0.75);
+    el('tazo-img-prev').src=curTazoImgB64;el('tazo-img-prev').style.display='block';el('tazo-img-hint').style.display='none';
+  };img.src=e.target.result;};r.readAsDataURL(f);
+}
+function saveTazoImg(){
+  if(!curTazoImgB64){toast('Selecciona una imagen');return;}
+  var t=tazoAlb();if(!t)return;
+  if(!t.stickers)t.stickers={};
+  var x=t.stickers[curTazoImgId]||{state:'missing',img:null,qty:0};
+  t.stickers[curTazoImgId]=Object.assign({},x,{img:curTazoImgB64});
+  closeModal('modal-tazo-img');toast('Imagen guardada');
+  renderTazoGrid();scheduleSaveTazo(t);
+}
+
+// EDIT TAZO COLLECTION
+function openEditTazoModal(){
+  var t=tazoAlb();if(!t)return;tazoEditCover=null;
+  el('tazo-edit-name').value=t.name;
+  if(t.cover){el('tazo-edit-prev').src=t.cover;el('tazo-edit-prev').style.display='block';el('tazo-edit-hint').style.display='none';}
+  else{el('tazo-edit-prev').style.display='none';el('tazo-edit-hint').style.display='block';}
+  el('tazo-edit-cover-input').value='';el('tazo-edit-qty').value='';
+  el('tazo-info').textContent=(t.tazos||[]).length+' tazos en total';
+  openModal('modal-edit-tazo');
+}
+function saveTazoEdit(){
+  var t=tazoAlb();if(!t)return;
+  var newName=el('tazo-edit-name').value.trim();if(newName)t.name=newName;
+  if(tazoEditCover)t.cover=tazoEditCover;
+  dbSaveTazo(t);renderTazoDetail();renderTazosHome();toast('Guardado');
+}
+function modTazos(action){
+  var t=tazoAlb();if(!t)return;
+  var qty=parseInt(el('tazo-edit-qty').value)||0;if(qty<1){toast('Escribe la cantidad');return;}
+  if(!t.stickers)t.stickers={};
+  if(action==='add'){
+    var cur=(t.tazos||[]).length;
+    for(var i=0;i<qty;i++){var nid=String(cur+i+1);t.tazos.push(nid);if(!t.stickers[nid])t.stickers[nid]={state:'missing',img:null,qty:0};}
+    t.total=t.tazos.length;toast(qty+' tazos agregados');
+  } else {
+    if(qty>=t.tazos.length){toast('No podes borrar todos');return;}
+    var removed=t.tazos.splice(-qty);removed.forEach(function(id){delete t.stickers[id];});
+    t.total=t.tazos.length;toast(qty+' tazos eliminados');
+  }
+  el('tazo-edit-qty').value='';el('tazo-info').textContent=t.tazos.length+' tazos en total';
+  scheduleSaveTazo(t);renderTazoDetail();renderTazosHome();
+}
+
+// DELETE
+function openConfirmDeleteTazo(){var t=tazoAlb();if(!t)return;el('del-tazo-msg').textContent='Vas a eliminar "'+t.name+'". Esta accion no se puede deshacer.';openModal('modal-del-tazo');}
+function doDeleteTazo(){dbDeleteTazo(taid);tazosCollections=tazosCollections.filter(function(t){return t.id!==taid;});closeModal('modal-del-tazo');goHome();toast('Coleccion eliminada');}
+
+// FINISH
+function finishTazoAndGoHome(){
+  var t=tazoAlb();
+  if(t){clearTimeout(_saveTimer);setSyncing(true);dbSaveTazo(t);toast('✅ Guardado correctamente');}
+  setTimeout(function(){goHome();},600);
+}
+
+// QR TAZOS (simple version)
+function openTazoQR(){
+  var t=tazoAlb();if(!t)return;
+  var stk=t.stickers||{};var missing=[],repeated=[];
+  (t.tazos||[]).forEach(function(id){var x=stk[id];var st=x?x.state:'missing';if(st==='missing')missing.push(id);if(st==='repeated')repeated.push(id);});
+  var compact=t.id+'|'+t.name+'|'+t.tazos.length+'|'+missing.join(',')+'||'+repeated.join(',');
+  var enc=btoa(unescape(encodeURIComponent(compact))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  var url=location.origin+location.pathname+'?s='+enc;
+  window._surl=url;window._salb=t;
+  el('qr-sub').textContent=t.name+' - '+missing.length+' faltantes';
+  el('qr-wrap').innerHTML='';
+  try{new QRCode(el('qr-wrap'),{text:url,width:200,height:200,colorDark:'#161B26',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});}catch(e){}
+  el('qr-link').textContent=url.length>80?url.slice(0,80)+'...':url;
+  el('qr-note').innerHTML='<strong>'+missing.length+'</strong> tazos faltantes'+(repeated.length?' - <strong>'+repeated.length+'</strong> para intercambio':'');
+  openModal('modal-qr');
+}
+
+// UPDATE goHome to handle tazos tab
+var _origGoHome=goHome;
+goHome=function(){
+  aid=null;taid=null;renderHome();renderTazosHome();showView('view-home');
+  el('btn-new').style.display=curSection==='albums'?'inline-flex':'none';
+  el('btn-new-tazo').style.display=curSection==='tazos'?'inline-flex':'none';
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+};
+
+// UPDATE showView to handle tab bar and buttons
+var _origShowView=showView;
+showView=function(id){
+  document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});
+  el(id).classList.add('active');
+  var isHome=id==='view-home';
+  el('nav-back').style.display=isHome?'none':'inline-flex';
+  el('btn-new').style.display=(isHome&&curSection==='albums')?'inline-flex':'none';
+  el('btn-new-tazo').style.display=(isHome&&curSection==='tazos')?'inline-flex':'none';
+  el('tab-bar').style.display=isHome?'flex':'none';
+};
+
+// UPDATE loadAlbums to also check for tazos hash
+var _origLoadAlbums=loadAlbums;
+loadAlbums=function(){
+  if(!user)return;
+  setSyncing(true);
+  sb.from('albums').select('*').eq('user_id',user.id).order('created_at').then(function(r){
+    setSyncing(false);
+    if(r.error){toast('Error cargando');console.error(r.error);return;}
+    albums=(r.data||[]).map(mapAlbum);
+    renderHome();
+    var hashMatch=location.hash.match(/#a=([a-zA-Z0-9-]+)/);
+    var tazoMatch=location.hash.match(/#t=([a-zA-Z0-9-]+)/);
+    if(hashMatch&&albums.some(function(a){return a.id===hashMatch[1];})){
+      openAlbum(hashMatch[1]);
+    } else if(tazoMatch){
+      switchSection('tazos');
+      sb.from('tazos_collections').select('*').eq('user_id',user.id).order('created_at').then(function(r2){
+        if(!r2.error){tazosCollections=(r2.data||[]).map(mapTazo);renderTazosHome();}
+        if(tazosCollections.some(function(t){return t.id===tazoMatch[1];})){openTazoDetail(tazoMatch[1]);}
+        else{showView('view-home');}
+      });
+    } else {
+      showView('view-home');
+    }
+  });
+};
+
 document.querySelectorAll('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('open');});});
 
 // INIT AUTH - runs after Supabase is loaded
@@ -783,7 +1374,7 @@ function initApp(){
       var name=user.user_metadata&&user.user_metadata.user_name?user.user_metadata.user_name:(user.email?user.email.split('@')[0]:'Coleccionista');
       el('nav-user').textContent=name;el('greeting').textContent='Hola, '+name.split(' ')[0];
       el('view-login').style.display='none';el('app').style.display='block';el('loading').classList.add('hide');
-      loadAlbums();
+      loadAlbums();loadTazos();
     } else if(!r.data||!r.data.session){
       el('loading').classList.add('hide');el('view-login').style.display='flex';
     }
@@ -837,6 +1428,297 @@ if(shareCompact||shareParam){
   }
 } else {
   initApp();
+}
+
+// ═══════════════════════════════════════════════════════
+// TAZOS MODULE
+// ═══════════════════════════════════════════════════════
+var tazos=[], tcid=null, tazoFilter='all', tazoEditCover=null, tazoNewCover=null, tazoImgId=null;
+var _tazoPressTimer=null, _tazoTouchMoved=false, _tazoTX=0, _tazoTY=0;
+var TAZO_LABEL={have:'Tengo',repeated:'Repetido',missing:'Me falta'};
+
+function switchSection(sec){
+  el('tab-albums').classList.toggle('on', sec==='albums');
+  el('tab-tazos').classList.toggle('on', sec==='tazos');
+  el('btn-new').setAttribute('data-section', sec);
+  el('btn-new').textContent = sec==='albums' ? '+ Album' : '+ Tazos';
+  el('btn-new').onclick = sec==='albums' ? openNewModal : openNewTazoModal;
+  if(sec==='albums'){ renderHome(); showView('view-home'); }
+  else { renderTazosHome(); showView('view-tazos-home'); }
+}
+
+// DB
+function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
+function loadTazos(){
+  if(!user)return;
+  setSyncing(true);
+  sb.from('tazos_collections').select('*').eq('user_id',user.id).order('created_at').then(function(r){
+    setSyncing(false);
+    if(r.error){toast('Error cargando tazos');console.error(r.error);return;}
+    tazos=(r.data||[]).map(mapTazo);
+    renderTazosHome();
+  });
+}
+function dbSaveTazo(t){
+  if(!user||!sb)return;
+  setSyncing(true);
+  sb.from('tazos_collections').upsert({
+    id:t.id,user_id:user.id,name:t.name,total:t.total,
+    tazos:t.tazos||[],stickers:t.stickers||{},cover:t.cover||null,
+    updated_at:new Date().toISOString()
+  }).then(function(r){setSyncing(false);if(r.error){toast('Error guardando');console.error(r.error);}});
+}
+function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTimer=setTimeout(function(){dbSaveTazo(t);},800);}
+function dbDeleteTazo(id){
+  if(!user||!sb)return;
+  setSyncing(true);
+  sb.from('tazos_collections').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);if(r.error)toast('Error eliminando');});
+}
+function tc(){return tazos.find(function(t){return t.id===tcid;});}
+
+// HOME TAZOS
+function renderTazosHome(){
+  var list=el('tazos-list');
+  if(!tazos.length){
+    list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg><h3>Sin tazos aun</h3><p>Toca + Tazos para empezar</p></div>';
+    el('tazos-count').textContent='Tu coleccion de tazos';return;
+  }
+  list.innerHTML=tazos.map(function(t){
+    var s=tazoStats(t);var pct=s.total>0?Math.round(s.hv/s.total*100):0;
+    var cov=t.cover?'<img src="'+t.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#9711;</div>';
+    return'<div class="al-card" onclick="openTazoDetail(\''+t.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+t.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';
+  }).join('');
+  el('tazos-count').textContent=tazos.length+(tazos.length===1?' coleccion':' colecciones');
+}
+
+// STATS
+function tazoStats(t){
+  var hv=0,rp=0,ms=0;
+  (t.tazos||[]).forEach(function(id){
+    var x=t.stickers&&t.stickers[id];var st=x?x.state:'missing';
+    if(st==='have')hv++;else if(st==='repeated')rp++;else ms++;
+  });
+  return{hv:hv,rp:rp,ms:ms,total:(t.tazos||[]).length};
+}
+
+// NEW
+function openNewTazoModal(){
+  tazoNewCover=null;
+  ['tazo-inp-name','tazo-inp-total'].forEach(function(id){el(id).value='';});
+  el('tazo-cover-prev').style.display='none';el('tazo-cover-hint').style.display='block';el('tazo-cover-input').value='';
+  openModal('modal-new-tazo');
+}
+function createTazoCollection(){
+  var name=el('tazo-inp-name').value.trim();if(!name){toast('Escribe el nombre');return;}
+  var total=parseInt(el('tazo-inp-total').value)||0;if(!total){toast('Agrega la cantidad de tazos');return;}
+  var ids=Array.from({length:total},function(_,i){return String(i+1);});
+  var stickers={};ids.forEach(function(id){stickers[id]={state:'missing',img:null};});
+  var t={id:crypto.randomUUID(),name:name,total:total,tazos:ids,stickers:stickers,cover:tazoNewCover||null};
+  tazos.push(t);closeModal('modal-new-tazo');
+  dbSaveTazo(t);toast('Coleccion creada');openTazoDetail(t.id);
+}
+
+// DETAIL
+function openTazoDetail(id){
+  tcid=id;tazoFilter='all';showView('view-tazo-detail');
+  // hide section tabs when inside detail
+  el('section-tabs').style.display='none';
+  renderTazoDetail();
+  try{history.replaceState(null,'','#tc='+id);}catch(e){}
+}
+function renderTazoDetail(){
+  var t=tc();if(!t)return;
+  var s=tazoStats(t);var pct=s.total>0?Math.round(s.hv/s.total*100):0;
+  el('tazo-name').textContent=t.name;
+  el('tazo-sub').textContent=t.total+' tazos en total';
+  el('tazo-bar').style.width=pct+'%';el('tazo-pct').textContent=pct+'%';
+  el('tazo-ms-t').textContent=s.total;el('tazo-ms-h').textContent=s.hv;
+  el('tazo-ms-m').textContent=s.ms;el('tazo-ms-r').textContent=s.rp;
+  el('tazo-cover-wrap').innerHTML=t.cover?'<img src="'+t.cover+'" class="ah-cover" alt="">':'<div class="ah-cover-ph">&#9711;</div>';
+  renderTazoGrid();
+}
+function setTazoFilter(f,btn){
+  tazoFilter=f;
+  el('tazo-filters').querySelectorAll('.pill').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');renderTazoGrid();
+}
+function renderTazoGrid(){
+  var t=tc();if(!t)return;
+  var grid=el('tazo-grid');var stk=t.stickers||{};var html='';
+  (t.tazos||[]).forEach(function(id){
+    var x=stk[id];var st=x?x.state:'missing';
+    if(tazoFilter!=='all'&&st!==tazoFilter)return;
+    var sc=st==='have'?'ts-have':st==='repeated'?'ts-rep':'';
+    var badge=st==='have'?'<span class="tazo-badge ok">&#10003;</span>':st==='repeated'?'<span class="tazo-badge rep">x'+(x&&x.qty||2)+'</span>':'';
+    var inner=x&&x.img?'<img src="'+x.img+'" alt="">':'<span class="tazo-num">'+id+'</span>';
+    var evts='onmousedown="tsp(\''+id+'\',this)" onmouseup="tep(\''+id+'\',this,event)" onmouseleave="clearTimeout(_tazoPressTimer)" ontouchstart="tsp(\''+id+'\',this,event);event.stopPropagation()" ontouchmove="tcancelMove(event)" ontouchend="tep(\''+id+'\',this,event)"';
+    html+='<div class="tazo '+sc+'" '+evts+' title="Tazo '+id+'">'+inner+badge+'</div>';
+  });
+  grid.innerHTML=html||'<p style="color:var(--muted);font-size:13px;text-align:center;padding:2rem;grid-column:1/-1">Sin tazos con este filtro</p>';
+}
+
+// TAP/LONGPRESS TAZOS
+function tsp(id,e,ev){
+  _tazoTouchMoved=false;
+  if(ev&&ev.touches&&ev.touches[0]){_tazoTX=ev.touches[0].clientX;_tazoTY=ev.touches[0].clientY;}
+  _tazoPressTimer=setTimeout(function(){_tazoPressTimer=null;if(!_tazoTouchMoved)openTazoMenu(id);},500);
+}
+function tcancelMove(ev){
+  if(!ev.touches||!ev.touches[0])return;
+  if(Math.abs(ev.touches[0].clientX-_tazoTX)>10||Math.abs(ev.touches[0].clientY-_tazoTY)>10){
+    _tazoTouchMoved=true;clearTimeout(_tazoPressTimer);_tazoPressTimer=null;
+  }
+}
+function tep(id,domEl,ev){
+  if(_tazoTouchMoved){_tazoTouchMoved=false;return;}
+  if(_tazoPressTimer){clearTimeout(_tazoPressTimer);_tazoPressTimer=null;tapTazo(id,domEl);}
+  if(ev&&ev.cancelable)ev.preventDefault();
+}
+function tapTazo(id,domEl){
+  var t=tc();if(!t)return;if(!t.stickers)t.stickers={};
+  var x=t.stickers[id]||{state:'missing',img:null};
+  var next=x.state==='missing'?'have':'missing';
+  t.stickers[id]=Object.assign({},x,{state:next});
+  domEl.classList.add('tazo-pulse');setTimeout(function(){domEl.classList.remove('tazo-pulse');},200);
+  toast(next==='have'?'Lo tengo':'Sin marcar');
+  renderTazoDetail();renderTazosHome();scheduleSaveTazo(t);
+}
+function openTazoMenu(id){
+  var t=tc();if(!t)return;
+  tazoImgId=id;
+  var x=t.stickers&&t.stickers[id];
+  el('tazo-menu-id').textContent=id;
+  el('tazo-menu-state').textContent=TAZO_LABEL[x?x.state:'missing'];
+  repLam=id;repSec='tazo';
+  openModal('modal-tazo-menu');
+}
+function tazoMenuRepeated(){
+  closeModal('modal-tazo-menu');
+  el('rep-id').textContent=tazoImgId;
+  var t=tc();var x=t&&t.stickers&&t.stickers[tazoImgId];
+  el('rep-qty').value=x&&x.qty>=2?x.qty:2;
+  openModal('modal-rep');
+}
+function tazoMenuImg(){closeModal('modal-tazo-menu');openTazoImgModal(tazoImgId);}
+
+// Override saveRepeated to handle tazos
+var _origSaveRepeated=saveRepeated;
+saveRepeated=function(){
+  if(repSec==='tazo'){
+    var t=tc();if(!t||!tazoImgId)return;
+    var qty=parseInt(el('rep-qty').value)||2;if(qty<2){toast('Minimo 2');return;}
+    if(!t.stickers)t.stickers={};
+    var x=t.stickers[tazoImgId]||{state:'missing',img:null};
+    t.stickers[tazoImgId]=Object.assign({},x,{state:'repeated',qty:qty});
+    closeModal('modal-rep');toast(qty+' repetidos');
+    renderTazoDetail();renderTazosHome();scheduleSaveTazo(t);
+  } else {
+    _origSaveRepeated();
+  }
+};
+
+// TAZO IMG
+function openTazoImgModal(id){
+  tazoImgId=id;
+  el('tazo-img-id').textContent=id;
+  var t=tc();var x=t&&t.stickers&&t.stickers[id];
+  var img=x?x.img:null;
+  if(img){el('tazo-img-preview').src=img;el('tazo-img-preview').style.display='block';el('tazo-img-hint').style.display='none';el('tazo-img-del-btn').style.display='';}
+  else{el('tazo-img-preview').style.display='none';el('tazo-img-hint').style.display='block';el('tazo-img-del-btn').style.display='none';}
+  openModal('modal-tazo-img');
+}
+function saveTazoImg(inp){
+  var f=inp.files[0];if(!f)return;
+  var img=new Image();var r=new FileReader();
+  r.onload=function(e){
+    img.onload=function(){
+      var MAX=200;var w=img.width,h=img.height;
+      if(w>MAX||h>MAX){var ratio=Math.min(MAX/w,MAX/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      var b64=c.toDataURL('image/jpeg',0.7);
+      el('tazo-img-preview').src=b64;el('tazo-img-preview').style.display='block';
+      el('tazo-img-hint').style.display='none';el('tazo-img-del-btn').style.display='';
+      var t=tc();if(!t)return;if(!t.stickers)t.stickers={};
+      var x=t.stickers[tazoImgId]||{state:'missing'};
+      t.stickers[tazoImgId]=Object.assign({},x,{img:b64});
+      scheduleSaveTazo(t);renderTazoGrid();
+    };img.src=e.target.result;
+  };r.readAsDataURL(f);
+}
+function deleteTazoImg(){
+  var t=tc();if(!t||!tazoImgId)return;
+  if(t.stickers&&t.stickers[tazoImgId])t.stickers[tazoImgId].img=null;
+  el('tazo-img-preview').style.display='none';el('tazo-img-hint').style.display='block';el('tazo-img-del-btn').style.display='none';
+  scheduleSaveTazo(t);renderTazoGrid();
+}
+
+// EDIT TAZO COLLECTION
+function openEditTazoModal(){
+  var t=tc();if(!t)return;tazoEditCover=null;
+  el('tazo-edit-name').value=t.name;
+  if(t.cover){el('tazo-edit-prev').src=t.cover;el('tazo-edit-prev').style.display='block';el('tazo-edit-hint').style.display='none';}
+  else{el('tazo-edit-prev').style.display='none';el('tazo-edit-hint').style.display='block';}
+  el('tazo-edit-cover-input').value='';el('tazo-edit-qty').value='';
+  el('tazo-info').textContent=(t.tazos||[]).length+' tazos en total';
+  openModal('modal-edit-tazo');
+}
+function saveTazoEdit(){
+  var t=tc();if(!t)return;
+  var newName=el('tazo-edit-name').value.trim();if(newName)t.name=newName;
+  if(tazoEditCover)t.cover=tazoEditCover;
+  dbSaveTazo(t);renderTazoDetail();renderTazosHome();toast('Guardado');
+}
+function modTazos(action){
+  var t=tc();if(!t)return;
+  var qty=parseInt(el('tazo-edit-qty').value)||0;if(qty<1){toast('Escribe la cantidad');return;}
+  if(!t.stickers)t.stickers={};
+  if(action==='add'){
+    var last=t.tazos.length>0?parseInt(t.tazos[t.tazos.length-1])||t.tazos.length:0;
+    for(var i=0;i<qty;i++){var nid=String(last+i+1);t.tazos.push(nid);if(!t.stickers[nid])t.stickers[nid]={state:'missing',img:null};}
+    t.total=t.tazos.length;toast(qty+' tazos agregados');
+  } else {
+    if(qty>=t.tazos.length){toast('No podes borrar todos');return;}
+    var removed=t.tazos.splice(-qty);removed.forEach(function(id){delete t.stickers[id];});
+    t.total=t.tazos.length;toast(qty+' tazos eliminados');
+  }
+  el('tazo-edit-qty').value='';
+  el('tazo-info').textContent=t.tazos.length+' tazos en total';
+  scheduleSaveTazo(t);renderTazoDetail();renderTazosHome();
+}
+
+// DELETE
+function openConfirmDeleteTazo(){var t=tc();if(!t)return;el('tazo-del-msg').textContent='Vas a eliminar "'+t.name+'". No se puede deshacer.';openModal('modal-del-tazo');}
+function doDeleteTazo(){dbDeleteTazo(tcid);tazos=tazos.filter(function(t){return t.id!==tcid;});closeModal('modal-del-tazo');goTazosHome();toast('Coleccion eliminada');}
+function goTazosHome(){
+  tcid=null;el('section-tabs').style.display='';
+  renderTazosHome();showView('view-tazos-home');
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+}
+function finishTazoAndGoHome(){
+  var t=tc();if(t){clearTimeout(_saveTimer);dbSaveTazo(t);toast('Guardado');}
+  setTimeout(function(){goTazosHome();},400);
+}
+
+// QR TAZOS
+function openTazoQR(){
+  var t=tc();if(!t)return;
+  var s=tazoStats(t);var missing=[],repeated=[];
+  (t.tazos||[]).forEach(function(id){
+    var st=(t.stickers&&t.stickers[id])?t.stickers[id].state:'missing';
+    if(st==='missing')missing.push(id);
+    if(st==='repeated')repeated.push(id);
+  });
+  var compact=t.id+'|'+t.name+'|'+s.total+'|'+missing.join(',')+'||'+repeated.join(',');
+  var enc=btoa(unescape(encodeURIComponent(compact))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  var url=location.origin+location.pathname+'?s='+enc;
+  window._surl=url;window._salb=null;
+  el('qr-sub').textContent=t.name+' - '+s.ms+' tazos faltantes';
+  el('qr-wrap').innerHTML='';
+  try{new QRCode(el('qr-wrap'),{text:url,width:200,height:200,colorDark:'#161B26',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.L});}catch(e){}
+  el('qr-link').textContent=url.length>80?url.slice(0,80)+'...':url;
+  el('qr-note').innerHTML='<strong>'+missing.length+'</strong> tazos faltantes'+(repeated.length?' - <strong>'+repeated.length+'</strong> para intercambio':'');
+  openModal('modal-qr');
 }
 
 function fetchPublicCover(albumId){
