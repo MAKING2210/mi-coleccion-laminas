@@ -278,20 +278,16 @@ body{padding-bottom:60px}
   </nav>
 
 
-  <div class="section-tabs" id="section-tabs">
-    <button class="section-tab on" id="tab-albums" onclick="switchSection('albums')">📚 Albums</button>
-    <button class="section-tab" id="tab-tazos" onclick="switchSection('tazos')">⭕ Tazos</button>
-  </div>
 
   <div id="view-home" class="view active">
     <div class="wrap">
-      <div class="home-top"><h2 id="greeting">Mis albumes</h2><p id="home-count">Tu coleccion personal</p></div>
+      <div class="home-top"><h2 id="greeting">Mi Coleccion</h2><p id="home-count">Tu coleccion personal</p></div>
       <div id="section-albums">
-        <div class="sec-hdr">Albums</div>
+        <div class="sec-hdr">📚 Albums de laminas</div>
         <div class="albums-list" id="albums-list"></div>
       </div>
-      <div id="section-tazos" style="display:none">
-        <div class="sec-hdr">Colecciones de tazos</div>
+      <div id="section-tazos" style="margin-top:1.5rem">
+        <div class="sec-hdr">⭕ Colecciones de tazos</div>
         <div class="albums-list" id="tazos-list"></div>
       </div>
     </div>
@@ -755,8 +751,8 @@ function el(id){return document.getElementById(id);}
 function toast(m,d){d=d||2000;var e=el('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},d);}
 function closeModal(id){el(id).classList.remove('open');}
 function openModal(id){el(id).classList.add('open');}
-function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');var isHome=id==='view-home'||id==='view-tazos-home';el('nav-back').style.display=isHome?'none':'inline-flex';el('fab').classList.toggle('visible',isHome);}
-function goHome(){aid=null;el('section-tabs').style.display='';renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');var isHome=id==='view-home';el('nav-back').style.display=isHome?'none':'inline-flex';el('fab').classList.toggle('visible',isHome);}
+function goHome(){aid=null;renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
 function finishAndGoHome(){
   var a=alb();
   if(a){
@@ -862,7 +858,8 @@ function renderHome(){
     return;
   }
   list.innerHTML=albums.map(function(a){var s=stats(a);var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=a.cover?'<img src="'+a.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#128218;</div>';return'<div class="al-card" onclick="openAlbum(\''+a.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+a.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+(a.hasSpecial?' - '+a.specialIds.length+' esp':'')+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');
-  el('home-count').textContent=albums.length+(albums.length===1?' album':' albumes');
+  el('home-count').textContent='Tu coleccion personal';
+  renderTazosHome();
 }
 
 // NEW ALBUM
@@ -1083,15 +1080,9 @@ var curTazoImgId=null, curTazoImgB64=null, tazoNewCover=null, tazoEditCover=null
 function switchSection(sec){
   el('tab-albums').classList.toggle('on',sec==='albums');
   el('tab-tazos').classList.toggle('on',sec==='tazos');
-  if(sec==='albums'){
-    el('btn-new').textContent='+ Album';
-    el('btn-new').onclick=openNewModal;
-    renderHome();showView('view-home');
-  } else {
-    el('btn-new').textContent='+ Tazos';
-    el('btn-new').onclick=openNewTazoModal;
-    renderTazosHome();showView('view-tazos-home');
-  }
+  showView('view-home');
+  var target=sec==='albums'?el('section-albums'):el('section-tazos');
+  if(target)setTimeout(function(){target.scrollIntoView({behavior:'smooth',block:'start'});},100);
 }
 
 // DB
@@ -1099,7 +1090,7 @@ function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total
 function loadTazos(){
   if(!user)return;
   setSyncing(true);
-  sb.from('tazos_collections').select('*').eq('user_id',user.id).order('created_at').then(function(r){
+  sb.from('tazos').select('*').eq('user_id',user.id).order('created_at').then(function(r){
     setSyncing(false);
     if(r.error){toast('Error cargando tazos');return;}
     tazosCollections=(r.data||[]).map(mapTazo);
@@ -1109,29 +1100,13 @@ function loadTazos(){
 function dbSaveTazo(t){
   if(!user||!sb)return;
   setSyncing(true);
-  sb.from('tazos_collections').upsert({id:t.id,user_id:user.id,name:t.name,cover:t.cover||null,total:t.total,tazos:t.tazos||[],stickers:t.stickers||{},updated_at:new Date().toISOString()}).then(function(r){setSyncing(false);if(r.error){toast('Error guardando');console.error(r.error);}});
+  sb.from('tazos').upsert({id:t.id,user_id:user.id,name:t.name,cover:t.cover||null,total:t.total,tazos:t.tazos||[],stickers:t.stickers||{},updated_at:new Date().toISOString()}).then(function(r){setSyncing(false);if(r.error){toast('Error guardando');console.error(r.error);}});
 }
-function dbDeleteTazo(id){if(!user||!sb)return;setSyncing(true);sb.from('tazos_collections').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);});}
+function dbDeleteTazo(id){if(!user||!sb)return;setSyncing(true);sb.from('tazos').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);});}
 function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTimer=setTimeout(function(){dbSaveTazo(t);},800);}
 function tazoAlb(){return tazosCollections.find(function(t){return t.id===taid;});}
 
 // HOME TAZOS
-function renderTazosHome(){
-  var list=el('tazos-list');
-  if(!tazosCollections.length){
-    list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><h3>Sin colecciones de tazos</h3><p>Toca "+ Tazos" para empezar</p></div>';
-    return;
-  }
-  list.innerHTML=tazosCollections.map(function(t){
-    var stk=t.stickers||{};var hv=0,ms=0,rp=0;
-    (t.tazos||[]).forEach(function(id){var x=stk[id];var st=x?x.state:'missing';if(st==='have')hv++;else if(st==='repeated')rp++;else ms++;});
-    var total=(t.tazos||[]).length;var pct=total>0?Math.round(hv/total*100):0;
-    var cov=t.cover?'<img src="'+t.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph" style="border-radius:50%;font-size:22px">⭕</div>';
-    return'<div class="al-card" onclick="openTazoDetail(\''+t.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+t.name+'</div><div class="al-sub">'+hv+'/'+total+' - '+ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';
-  }).join('');
-}
-
-// NEW TAZO COLLECTION
 function openNewTazoModal(){
   tazoNewCover=null;
   ['tazo-inp-name','tazo-inp-total'].forEach(function(id){el(id).value='';});
@@ -1427,17 +1402,20 @@ function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total
 function loadTazos(){
   if(!user)return;
   setSyncing(true);
-  sb.from('tazos_collections').select('*').eq('user_id',user.id).order('created_at').then(function(r){
+  sb.from('tazos').select('*').eq('user_id',user.id).order('created_at').then(function(r){
     setSyncing(false);
     if(r.error){toast('Error cargando tazos');console.error(r.error);return;}
     tazos=(r.data||[]).map(mapTazo);
     renderTazosHome();
+    // Update home-count
+    var ac=albums.length, tc2=tazos.length;
+    if(el('home-count'))el('home-count').textContent=ac+(ac===1?' album':' albumes')+' · '+tc2+(tc2===1?' coleccion de tazos':' colecciones de tazos');
   });
 }
 function dbSaveTazo(t){
   if(!user||!sb)return;
   setSyncing(true);
-  sb.from('tazos_collections').upsert({
+  sb.from('tazos').upsert({
     id:t.id,user_id:user.id,name:t.name,total:t.total,
     tazos:t.tazos||[],stickers:t.stickers||{},cover:t.cover||null,
     updated_at:new Date().toISOString()
@@ -1447,7 +1425,7 @@ function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTime
 function dbDeleteTazo(id){
   if(!user||!sb)return;
   setSyncing(true);
-  sb.from('tazos_collections').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);if(r.error)toast('Error eliminando');});
+  sb.from('tazos').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);if(r.error)toast('Error eliminando');});
 }
 function tc(){return tazos.find(function(t){return t.id===tcid;});}
 
@@ -1497,7 +1475,7 @@ function createTazoCollection(){
 function openTazoDetail(id){
   tcid=id;tazoFilter='all';showView('view-tazo-detail');
   // hide section tabs when inside detail
-  el('section-tabs').style.display='none';
+  
   renderTazoDetail();
   try{history.replaceState(null,'','#tc='+id);}catch(e){}
 }
@@ -1666,8 +1644,8 @@ function modTazos(action){
 function openConfirmDeleteTazo(){var t=tc();if(!t)return;el('tazo-del-msg').textContent='Vas a eliminar "'+t.name+'". No se puede deshacer.';openModal('modal-del-tazo');}
 function doDeleteTazo(){dbDeleteTazo(tcid);tazos=tazos.filter(function(t){return t.id!==tcid;});closeModal('modal-del-tazo');goTazosHome();toast('Coleccion eliminada');}
 function goTazosHome(){
-  tcid=null;el('section-tabs').style.display='';
-  renderTazosHome();showView('view-tazos-home');
+  tcid=null;
+  renderHome();showView('view-home');
   try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
 }
 function finishTazoAndGoHome(){
