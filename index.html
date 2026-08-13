@@ -189,6 +189,18 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 .fab-backdrop{position:fixed;inset:0;z-index:99;display:none}
 .fab-backdrop.open{display:block}
 
+
+/* HOME FOLDERS */
+.home-folders{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:1rem}
+.folder-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.folder-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(140,47,57,.12);transform:translateY(-2px)}
+.folder-card:active{transform:scale(.97)}
+.folder-icon{font-size:42px;display:block;margin-bottom:.75rem}
+.folder-title{font-family:var(--f-display);font-size:17px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.folder-sub{font-size:12px;color:var(--muted)}
+.folder-bar{height:4px;background:var(--bdr);border-radius:2px;margin-top:.75rem;overflow:hidden}
+.folder-bar-f{height:100%;background:linear-gradient(90deg,var(--blue),var(--holo-b));border-radius:2px;transition:width .5s}
+@media(max-width:480px){.folder-card{padding:1.2rem .75rem}.folder-icon{font-size:36px}}
 /* TAZOS MODULE */
 .section-tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1rem}
 .section-tab{padding:12px 16px;border:none;background:none;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
@@ -267,29 +279,52 @@ body{padding-bottom:60px}
   <nav class="nav" id="main-nav">
     <div class="nav-brand">
       <div class="nav-logo"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg></div>
-      <span class="nav-title">Mi Coleccion</span>
+      <span class="nav-title" onclick="goHome()" style="cursor:pointer">Mi Coleccion</span>
     </div>
     <div class="nav-right">
       <span class="sync-dot" id="sync-dot"></span>
       <span class="nav-user" id="nav-user" onclick="openNameModal()" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" title="Tocar para cambiar tu nombre"></span>
-      <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goHome()">← Inicio</button>
+      <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goBack()">← Volver</button>
       <button class="btn btn-sm" id="btn-logout" onclick="logout()">salir</button>
     </div>
   </nav>
 
 
 
+  <!-- INICIO: dos carpetas -->
   <div id="view-home" class="view active">
     <div class="wrap">
       <div class="home-top"><h2 id="greeting">Mi Coleccion</h2><p id="home-count">Tu coleccion personal</p></div>
-      <div id="section-albums">
-        <div class="sec-hdr">📚 Albums de laminas</div>
-        <div class="albums-list" id="albums-list"></div>
+      <div class="home-folders">
+        <div class="folder-card" onclick="openSection('albums')">
+          <span class="folder-icon">📚</span>
+          <div class="folder-title">Albums</div>
+          <div class="folder-sub" id="folder-albums-sub">0 albumes</div>
+          <div class="folder-bar"><div class="folder-bar-f" id="folder-albums-bar" style="width:0%"></div></div>
+        </div>
+        <div class="folder-card" onclick="openSection('tazos')">
+          <span class="folder-icon">⭕</span>
+          <div class="folder-title">Tazos</div>
+          <div class="folder-sub" id="folder-tazos-sub">0 colecciones</div>
+          <div class="folder-bar"><div class="folder-bar-f" id="folder-tazos-bar" style="width:0%"></div></div>
+        </div>
       </div>
-      <div id="section-tazos" style="margin-top:1.5rem">
-        <div class="sec-hdr">⭕ Colecciones de tazos</div>
-        <div class="albums-list" id="tazos-list"></div>
-      </div>
+    </div>
+  </div>
+
+  <!-- LISTA DE ALBUMS -->
+  <div id="view-albums-list" class="view">
+    <div class="wrap">
+      <div class="home-top"><h2>📚 Albums</h2><p id="albums-count">Tus albumes de laminas</p></div>
+      <div class="albums-list" id="albums-list"></div>
+    </div>
+  </div>
+
+  <!-- LISTA DE TAZOS -->
+  <div id="view-tazos-list" class="view">
+    <div class="wrap">
+      <div class="home-top"><h2>⭕ Tazos</h2><p id="tazos-count2">Tus colecciones de tazos</p></div>
+      <div class="albums-list" id="tazos-list"></div>
     </div>
   </div>
 
@@ -751,9 +786,36 @@ function el(id){return document.getElementById(id);}
 function toast(m,d){d=d||2000;var e=el('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},d);}
 function closeModal(id){el(id).classList.remove('open');}
 function openModal(id){el(id).classList.add('open');}
-function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');var isHome=id==='view-home';el('nav-back').style.display=isHome?'none':'inline-flex';el('fab').classList.toggle('visible',isHome);}
-function goHome(){aid=null;renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');var isHome=id==='view-home'||id==='view-albums-list'||id==='view-tazos-list';el('nav-back').style.display=id==='view-home'?'none':'inline-flex';el('fab').classList.toggle('visible',isHome);}
+
+function goBack(){
+  var active=document.querySelector('#app .view.active');
+  var id=active?active.id:'';
+  if(id==='view-album'){renderHome();showView('view-albums-list');}
+  else if(id==='view-tazo-detail'){renderTazosHome();showView('view-tazos-list');}
+  else{goHome();}
+}
+// ── SECTION NAVIGATION ────────────────────────────────
+function openSection(sec){
+  if(sec==='albums'){showView('view-albums-list');}
+  else{showView('view-tazos-list');}
+}
+function goHome(){
+  aid=null;tcid=null;
+  renderHome();
+  showView('view-home');
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+}
+
 function finishAndGoHome(){
+  var a=alb();
+  if(a){clearTimeout(_saveTimer);dbSave(a);}
+  toast('Guardado');
+  setTimeout(function(){
+    renderHome();showView('view-albums-list');
+  },400);
+}
+function _finishAndGoHome_orig(){
   var a=alb();
   if(a){
     clearTimeout(_saveTimer);
@@ -851,14 +913,23 @@ function stats(a){var hv=0,rp=0,ms=0,sp=0;[].concat(a.normalIds||[]).concat(a.sp
 
 // HOME
 function renderHome(){
+  // Render albums list
   var list=el('albums-list');
-  if(!albums.length){
-    list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg><h3>Sin albumes aun</h3><p>Toca + Album para empezar</p></div>';
-    el('home-count').textContent='Tu coleccion personal';
-    return;
+  if(list){
+    if(!albums.length){
+      list.innerHTML='<div class="empty"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg><h3>Sin albumes aun</h3><p>Toca el + para empezar</p></div>';
+    } else {
+      list.innerHTML=albums.map(function(a){var s=stats(a);var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=a.cover?'<img src="'+a.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#128218;</div>';return'<div class="al-card" onclick="openAlbum(''+a.id+'')">'+cov+'<div class="al-info"><div class="al-name">'+a.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+(a.hasSpecial?' - '+a.specialIds.length+' esp':'')+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');
+    }
   }
-  list.innerHTML=albums.map(function(a){var s=stats(a);var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=a.cover?'<img src="'+a.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#128218;</div>';return'<div class="al-card" onclick="openAlbum(\''+a.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+a.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+(a.hasSpecial?' - '+a.specialIds.length+' esp':'')+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');
-  el('home-count').textContent='Tu coleccion personal';
+  // Update albums folder card
+  var ac=albums.length;
+  var th=0,tt=0;albums.forEach(function(a){var s=stats(a);th+=s.hv;tt+=s.total;});
+  var pctA=tt>0?Math.round(th/tt*100):0;
+  if(el('folder-albums-sub'))el('folder-albums-sub').textContent=ac+(ac===1?' album':' albumes');
+  if(el('folder-albums-bar'))el('folder-albums-bar').style.width=pctA+'%';
+  if(el('albums-count'))el('albums-count').textContent=ac+(ac===1?' album':' albumes');
+  if(el('home-count'))el('home-count').textContent='Tu coleccion personal';
   renderTazosHome();
 }
 
@@ -899,7 +970,7 @@ function createAlbum(){
 }
 
 // ALBUM DETAIL
-function openAlbum(id){aid=id;filN='all';filSp='all';vm='grid';albTab='normal';showView('view-album');renderAlbum();try{history.replaceState(null,'','#a='+id);}catch(e){}}
+function openAlbum(id){aid=id;filN='all';filSp='all';vm='grid';albTab='normal';renderAlbum();showView('view-album');try{history.replaceState(null,'','#a='+id);}catch(e){}}
 function setAlbumTab(t){albTab=t;el('tab-normal').classList.toggle('on',t==='normal');el('tab-special').classList.toggle('on',t==='special');el('sec-normal').style.display=t==='normal'?'':'none';el('sec-special').style.display=t==='special'?'':'none';}
 function quickFilter(f){var sec=albTab==='special'?'special':'normal';setFilter(f,null,sec);var filtersEl=el('filters-'+sec);if(filtersEl){filtersEl.querySelectorAll('.pill').forEach(function(b){b.classList.toggle('on',b.textContent.toLowerCase().indexOf(f==='all'?'toda':f==='have'?'tengo':f==='missing'?'faltan':'repet')>=0);});}}
 function renderAlbum(){
@@ -1441,7 +1512,14 @@ function renderTazosHome(){
     var cov=t.cover?'<img src="'+t.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#9711;</div>';
     return'<div class="al-card" onclick="openTazoDetail(\''+t.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+t.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';
   }).join('');
-  el('tazos-count').textContent=tazos.length+(tazos.length===1?' coleccion':' colecciones');
+  var tc=tazos.length;
+  if(el('tazos-count'))el('tazos-count').textContent=tc+(tc===1?' coleccion':' colecciones');
+  if(el('tazos-count2'))el('tazos-count2').textContent=tc+(tc===1?' coleccion':' colecciones');
+  // Update tazos folder card
+  var th2=0,tt2=0;tazos.forEach(function(t){var s=tazoStats(t);th2+=s.hv;tt2+=s.total;});
+  var pctT=tt2>0?Math.round(th2/tt2*100):0;
+  if(el('folder-tazos-sub'))el('folder-tazos-sub').textContent=tc+(tc===1?' coleccion':' colecciones');
+  if(el('folder-tazos-bar'))el('folder-tazos-bar').style.width=pctT+'%';
 }
 
 // STATS
