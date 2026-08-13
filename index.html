@@ -197,6 +197,7 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
       <div class="field"><label>Contrasena</label><input id="login-pass" type="password" placeholder="********"><div class="field-error" id="login-error">Email o contrasena incorrectos</div></div>
       <button class="btn btn-primary btn-full" onclick="loginEmail()">Entrar</button>
       <div class="login-switch">No tenes cuenta? <a onclick="showRegister()">Registrate</a></div>
+      <div class="login-switch" style="margin-top:6px"><a onclick="openForgotModal()" style="color:var(--muted);font-weight:400">Olvide mi contrasena</a></div>
     </div>
     <div id="register-form" style="display:none">
       <div class="field"><label>Email</label><input id="reg-email" type="email" placeholder="tu@email.com"></div>
@@ -413,6 +414,15 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
   </div>
 </div>
 
+<div class="overlay" id="modal-forgot">
+  <div class="modal" style="max-width:320px">
+    <h2>Recuperar contrasena</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1rem">Te mandamos un link a tu email para que puedas crear una nueva contrasena.</p>
+    <div class="field"><label>Email</label><input id="forgot-email" type="email" placeholder="tu@email.com"><div class="field-error" id="forgot-error"></div></div>
+    <div class="mactions"><button class="btn" onclick="closeModal('modal-forgot')">Cancelar</button><button class="btn btn-primary" onclick="sendPasswordReset()">Enviar link</button></div>
+  </div>
+</div>
+
 <div class="overlay" id="modal-name">
   <div class="modal" style="max-width:320px">
     <h2>Tu nombre</h2>
@@ -461,6 +471,20 @@ function showLogin(){el('login-form').style.display='';el('register-form').style
 function showRegister(){el('login-form').style.display='none';el('register-form').style.display='';}
 function loginGitHub(){sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.origin+location.pathname}});}
 function logout(){sb.auth.signOut();}
+function openForgotModal(){
+  el('forgot-email').value='';
+  el('forgot-error').classList.remove('show');
+  openModal('modal-forgot');
+}
+function sendPasswordReset(){
+  var email=el('forgot-email').value.trim();
+  var errEl=el('forgot-error');
+  if(!email){errEl.textContent='Ingresa tu email';errEl.classList.add('show');return;}
+  sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname}).then(function(r){
+    if(r.error){errEl.textContent=r.error.message;errEl.classList.add('show');}
+    else{closeModal('modal-forgot');toast('Link enviado, revisa tu email');}
+  });
+}
 function openNameModal(){
   if(!user)return;
   var current=user.user_metadata&&user.user_metadata.user_name?user.user_metadata.user_name:'';
@@ -673,18 +697,35 @@ function refreshEditInfo(){var a=alb();if(!a)return;var nFmt={number:'numeros',l
 function saveEdit(){var a=alb();if(!a)return;var newName=el('edit-name').value.trim();if(newName)a.name=newName;if(editCover)a.cover=editCover;dbSave(a);renderAlbum();renderHome();toast('Guardado');}
 function modIds(sec,action){
   var a=alb();if(!a)return;
-  var inputId=sec==='normal'?'edit-add-n':'edit-add-sp';var qty=parseInt(el(inputId).value)||0;if(qty<1){toast('Escribe la cantidad');return;}
-  var ids=sec==='normal'?a.normalIds:a.specialIds;var fmt=sec==='normal'?a.fmtNormal:a.fmtSpecial;var prefix=sec==='special'&&fmt==='number'?'SP':'';
+  var inputId=sec==='normal'?'edit-add-n':'edit-add-sp';
+  var qty=parseInt(el(inputId).value)||0;if(qty<1){toast('Escribe la cantidad');return;}
+  var ids=sec==='normal'?a.normalIds:a.specialIds;
+  var fmt=sec==='normal'?a.fmtNormal:a.fmtSpecial;
+  var prefix=sec==='special'&&fmt==='number'?'SP':'';
+  if(!a.stickers)a.stickers={};
   if(action==='add'){
-    if(fmt==='number'){var nums=ids.map(function(id){return parseInt(id.replace(/^SP/,''));}).filter(function(n){return !isNaN(n);});var next=nums.length?Math.max.apply(null,nums)+1:1;for(var i=0;i<qty;i++)ids.push(prefix+next++);}
-    else{var last=ids[ids.length-1]||'';var nc=last?last.charCodeAt(0)+1:65;for(var i=0;i<qty;i++)ids.push(String.fromCharCode(nc+i));}
-    if(sec==='special'){if(!a.stickers)a.stickers={};ids.slice(-qty).forEach(function(id){if(!a.stickers[id])a.stickers[id]={state:'missing',type:a.defaultSpType||'holo',note:'',qty:0};});}
+    var newIds=[];
+    if(fmt==='number'){
+      var nums=ids.map(function(id){return parseInt(id.replace(/^SP/,''));}).filter(function(n){return !isNaN(n);});
+      var next=nums.length?Math.max.apply(null,nums)+1:1;
+      for(var i=0;i<qty;i++){var nid=prefix+next++;ids.push(nid);newIds.push(nid);}
+    } else {
+      var last=ids[ids.length-1]||'';var nc=last?last.charCodeAt(0)+1:65;
+      for(var i=0;i<qty;i++){var nid=String.fromCharCode(nc+i);ids.push(nid);newIds.push(nid);}
+    }
+    // Initialize stickers for new ids only — never touch existing ones
+    var defType=sec==='special'?(a.defaultSpType||'holo'):'normal';
+    newIds.forEach(function(id){if(!a.stickers[id])a.stickers[id]={state:'missing',type:defType,note:'',qty:0};});
     toast(qty+' laminas agregadas');
   } else {
     if(qty>=ids.length){toast('No podes borrar todas');return;}
-    var removed=ids.splice(-qty);removed.forEach(function(id){if(a.stickers)delete a.stickers[id];});toast(qty+' laminas eliminadas');
+    // Only remove from the end — never touch stickers of remaining ids
+    var removed=ids.splice(-qty);
+    removed.forEach(function(id){delete a.stickers[id];});
+    toast(qty+' laminas eliminadas');
   }
-  el(inputId).value='';scheduleSave(a);refreshEditInfo();renderAlbum();renderHome();
+  el(inputId).value='';
+  scheduleSave(a);refreshEditInfo();renderAlbum();renderHome();
 }
 function changeSpFmt(btn){var a=alb();if(!a)return;var newFmt=btn.dataset.fmt;if(newFmt===a.fmtSpecial)return;var qty=(a.specialIds||[]).length;var newIds=newFmt==='number'?Array.from({length:qty},function(_,i){return'SP'+(i+1);}):Array.from({length:qty},function(_,i){return String.fromCharCode(65+i);});var ns={};if(a.stickers)a.normalIds.forEach(function(id){if(a.stickers[id])ns[id]=a.stickers[id];});newIds.forEach(function(id){ns[id]={state:'missing',type:a.defaultSpType||'holo',note:'',qty:0};});a.specialIds=newIds;a.fmtSpecial=newFmt;a.stickers=ns;scheduleSave(a);refreshEditInfo();renderAlbum();renderHome();toast('Cambiado a '+(newFmt==='letter'?'letras':'numeros'));}
 
