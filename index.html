@@ -178,6 +178,17 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 .chips-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;font-size:12px;font-weight:600;color:var(--txt)}
+/* FAB - Floating Action Button */
+.fab{position:fixed;bottom:1.8rem;right:1.2rem;width:52px;height:52px;border-radius:50%;background:var(--blue);color:#fff;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 16px rgba(140,47,57,.35);z-index:100;display:none;align-items:center;justify-content:center;transition:all .15s;font-family:inherit}
+.fab:hover{transform:scale(1.07)}
+.fab.visible{display:flex}
+.fab-menu{position:fixed;bottom:5.5rem;right:1.2rem;display:none;flex-direction:column;gap:8px;z-index:100;align-items:flex-end}
+.fab-menu.open{display:flex}
+.fab-item{display:flex;align-items:center;gap:9px;background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:9px 14px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:13px;font-weight:600;color:var(--txt);white-space:nowrap;transition:all .13s}
+.fab-item:hover{background:var(--blue-l);border-color:var(--blue)}
+.fab-backdrop{position:fixed;inset:0;z-index:99;display:none}
+.fab-backdrop.open{display:block}
+
 /* TAZOS MODULE */
 .section-tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1rem}
 .section-tab{padding:12px 16px;border:none;background:none;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
@@ -262,7 +273,6 @@ body{padding-bottom:60px}
       <span class="sync-dot" id="sync-dot"></span>
       <span class="nav-user" id="nav-user" onclick="openNameModal()" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" title="Tocar para cambiar tu nombre"></span>
       <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goHome()">← Inicio</button>
-      <button class="btn btn-sm btn-primary" id="btn-new" onclick="openNewModal()">+ Album</button>
       <button class="btn btn-sm" id="btn-logout" onclick="logout()">salir</button>
     </div>
   </nav>
@@ -453,6 +463,14 @@ body{padding-bottom:60px}
     </div>
   </div>
 </div>
+
+<!-- FAB -->
+<div class="fab-backdrop" id="fab-backdrop" onclick="closeFabMenu()"></div>
+<div class="fab-menu" id="fab-menu">
+  <div class="fab-item" onclick="closeFabMenu();openNewModal()">📚 Nuevo album</div>
+  <div class="fab-item" onclick="closeFabMenu();openNewTazoModal()">⭕ Nueva coleccion de tazos</div>
+</div>
+<button class="fab" id="fab" onclick="toggleFabMenu()">+</button>
 
 <div class="overlay" id="modal-new">
   <div class="modal">
@@ -737,7 +755,7 @@ function el(id){return document.getElementById(id);}
 function toast(m,d){d=d||2000;var e=el('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},d);}
 function closeModal(id){el(id).classList.remove('open');}
 function openModal(id){el(id).classList.add('open');}
-function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');el('nav-back').style.display=id==='view-home'?'none':'inline-flex';el('btn-new').style.display=id==='view-home'?'inline-flex':'none';}
+function showView(id){document.querySelectorAll('#app .view').forEach(function(v){v.classList.remove('active');});el(id).classList.add('active');var isHome=id==='view-home'||id==='view-tazos-home';el('nav-back').style.display=isHome?'none':'inline-flex';el('fab').classList.toggle('visible',isHome);}
 function goHome(){aid=null;el('section-tabs').style.display='';renderHome();showView('view-home');try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
 function finishAndGoHome(){
   var a=alb();
@@ -1044,6 +1062,17 @@ function shareWA(){var a=window._salb||alb();if(!a)return;var d=buildShareData(a
 function renderPublic(d){var n=d.n||'',nm=d.nm||[],sm=d.sm||[],r=d.r||[],t=d.t||0;document.title=n+' - Lista de laminas';el('pub-title').textContent=n;var hv=t-nm.length-sm.length;el('pub-sub').textContent=hv+'/'+t+' laminas - '+(t>0?Math.round(hv/t*100):0)+'% completo';el('pub-missing').innerHTML='<div class="chips-box"><div class="chips-title">Me faltan normales ('+nm.length+')</div><div class="chips">'+nm.map(function(x){return'<span class="chip">'+x+'</span>';}).join('')+'</div></div>';el('pub-sp-missing').innerHTML=sm.length?'<div class="chips-box" style="background:linear-gradient(135deg,#f8f0ff,#eff8ff)"><div class="chips-title" style="color:var(--holo-a)">Especiales faltantes ('+sm.length+')</div><div class="chips">'+sm.map(function(x){return'<span class="chip">'+x+'</span>';}).join('')+'</div></div>':'';el('pub-repeated').innerHTML=r.length?'<div class="chips-box" style="border-color:rgba(186,117,23,.3)"><div class="chips-title" style="color:var(--amber)">Puedo intercambiar ('+r.length+')</div><div class="chips">'+r.map(function(x){return'<span class="chip">'+x+'</span>';}).join('')+'</div></div>':'';}
 
 // CLOSE MODALS ON BG CLICK
+// FAB menu
+function toggleFabMenu(){
+  el('fab-menu').classList.toggle('open');
+  el('fab-backdrop').classList.toggle('open');
+}
+function closeFabMenu(){
+  el('fab-menu').classList.remove('open');
+  el('fab-backdrop').classList.remove('open');
+}
+
+
 // ═══════════════════════════════════════════════════════
 // TAZOS MODULE
 // ═══════════════════════════════════════════════════════
@@ -1374,6 +1403,17 @@ if(shareCompact||shareParam){
 } else {
   initApp();
 }
+
+// FAB menu
+function toggleFabMenu(){
+  el('fab-menu').classList.toggle('open');
+  el('fab-backdrop').classList.toggle('open');
+}
+function closeFabMenu(){
+  el('fab-menu').classList.remove('open');
+  el('fab-backdrop').classList.remove('open');
+}
+
 
 // ═══════════════════════════════════════════════════════
 // TAZOS MODULE
