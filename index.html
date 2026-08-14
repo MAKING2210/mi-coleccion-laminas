@@ -1065,7 +1065,7 @@ function registerEmail(){
 }
 
 // DB
-function mapAlbum(a){return{id:a.id,name:a.name,cover:a.cover||null,fmtNormal:a.fmt_normal||'number',fmtSpecial:a.fmt_special||null,normalIds:a.normal_ids||[],specialIds:a.special_ids||[],hasSpecial:a.has_special||false,defaultSpType:a.default_sp_type||'holo',stickers:a.stickers||{}};}
+function mapAlbum(a){return{id:a.id,name:a.name,category:a.category||null,cover:a.cover||null,fmtNormal:a.fmt_normal||'number',fmtSpecial:a.fmt_special||null,normalIds:a.normal_ids||[],specialIds:a.special_ids||[],hasSpecial:a.has_special||false,defaultSpType:a.default_sp_type||'holo',stickers:a.stickers||{}};}
 function loadAlbums(){
   if(!user)return;
   setSyncing(true);
@@ -1343,7 +1343,7 @@ function switchSection(sec){
 }
 
 // DB
-function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
+function mapTazo(t){return{id:t.id,name:t.name,category:t.category||null,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
 
 function dbSaveTazo(t){
   if(!user||!sb)return;
@@ -1671,7 +1671,7 @@ var _tazoPressTimer=null, _tazoTouchMoved=false, _tazoTX=0, _tazoTY=0;
 var TAZO_LABEL={have:'Tengo',repeated:'Repetido',missing:'Me falta'};
 
 
-function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
+function mapTazo(t){return{id:t.id,name:t.name,category:t.category||null,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
 function loadTazos(){
   if(!user)return;
   setSyncing(true);
