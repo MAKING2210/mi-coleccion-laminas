@@ -972,15 +972,12 @@ function goBack(){
 // ── SECTION NAVIGATION ────────────────────────────────
 function openSection(sec){
   if(sec==='albums'){
+    // Show albums-list first, then render categories into it
+    showView('view-albums-list');
     renderAlbumCategories();
-    // renderAlbumCategories calls showView internally if single category
-    // Only call showView if there are multiple categories (grid is populated)
-    var grid=el('albums-cat-grid');
-    if(grid&&grid.children.length>0)showView('view-albums-list');
   } else {
+    showView('view-tazos-list');
     renderTazosCategories();
-    var tgrid=el('tazos-cat-grid');
-    if(tgrid&&tgrid.children.length>0)showView('view-tazos-list');
   }
 }
 function goHome(){
@@ -996,9 +993,8 @@ function finishAndGoHome(){
   toast('Guardado');
   setTimeout(function(){
     renderHome();
-    renderAlbumCategories();
-    if(currentAlbumCat){openAlbumCategory(currentAlbumCat);}
-    else{showView('view-albums-list');}
+    if(currentAlbumCat){showView('view-albums-list');renderAlbumCategories();}
+    else{showView('view-home');}
   },400);
 }
 function _finishAndGoHome_orig(){
@@ -1078,7 +1074,6 @@ function loadAlbums(){
     if(r.error){toast('Error cargando');console.error(r.error);return;}
     albums=(r.data||[]).map(mapAlbum);
     renderHome();
-    if(typeof renderAlbumCategories==='function')renderAlbumCategories();
     var hashMatch=location.hash.match(/#a=([a-zA-Z0-9-]+)/);
     if(hashMatch&&albums.some(function(a){return a.id===hashMatch[1];})){
       openAlbum(hashMatch[1]);
@@ -1685,7 +1680,6 @@ function loadTazos(){
     if(r.error){toast('Error cargando tazos');console.error(r.error);return;}
     tazos=(r.data||[]).map(mapTazo);
     renderTazosHome();
-    renderTazosCategories();
   });
 }
 
@@ -2015,9 +2009,9 @@ function getCatIcon(cat){return CAT_ICONS[cat]||'📁';}
 function toggleNewCategory(selId,inpId){var inp=el(inpId),sel=el(selId);if(inp.style.display==='none'){inp.style.display='';inp.focus();sel.style.display='none';}else{inp.style.display='none';sel.style.display='';}}
 function getSelectedCategory(selId,inpId){var inp=el(inpId);if(inp&&inp.style.display!=='none'&&inp.value.trim())return inp.value.trim();var sel=el(selId);return sel?sel.value||'Sin categoria':'Sin categoria';}
 function makeCatFolder(cat,sub,pct,clickFn){var div=document.createElement('div');div.className='cat-folder';div.innerHTML='<div class="cat-folder-icon">'+getCatIcon(cat)+'</div><div class="cat-folder-name">'+cat+'</div><div class="cat-folder-sub">'+sub+'</div><div class="cat-folder-bar"><div class="cat-folder-bar-f" style="width:'+pct+'%"></div></div>';div.addEventListener('click',function(){clickFn(cat);});return div;}
-function renderAlbumCategories(){var grid=el('albums-cat-grid');if(!grid)return;if(!albums.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>Sin albumes aun</h3><p>Toca el + para empezar</p></div>';return;}var cats={};albums.forEach(function(a){var cat=a.category||'Sin categoria';if(!cats[cat])cats[cat]={items:[],hv:0,total:0};cats[cat].items.push(a);var s=stats(a);cats[cat].hv+=s.hv;cats[cat].total+=s.total;});var catKeys=Object.keys(cats).sort();if(catKeys.length===1&&catKeys[0]==='Sin categoria'){openAlbumCategory('Sin categoria');return;}grid.innerHTML='';catKeys.forEach(function(cat){var g=cats[cat];var pct=g.total>0?Math.round(g.hv/g.total*100):0;grid.appendChild(makeCatFolder(cat,g.items.length+(g.items.length===1?' album':' albumes'),pct,openAlbumCategory));});if(el('albums-count'))el('albums-count').textContent=albums.length+(albums.length===1?' album':' albumes');}
+function renderAlbumCategories(){var grid=el('albums-cat-grid');if(!grid)return;if(!albums.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>Sin albumes aun</h3><p>Toca el + para empezar</p></div>';return;}var cats={};albums.forEach(function(a){var cat=a.category||'Sin categoria';if(!cats[cat])cats[cat]={items:[],hv:0,total:0};cats[cat].items.push(a);var s=stats(a);cats[cat].hv+=s.hv;cats[cat].total+=s.total;});var catKeys=Object.keys(cats).sort();if(catKeys.length===1){openAlbumCategory(catKeys[0]);return;}grid.innerHTML='';catKeys.forEach(function(cat){var g=cats[cat];var pct=g.total>0?Math.round(g.hv/g.total*100):0;grid.appendChild(makeCatFolder(cat,g.items.length+(g.items.length===1?' album':' albumes'),pct,openAlbumCategory));});if(el('albums-count'))el('albums-count').textContent=albums.length+(albums.length===1?' album':' albumes');}
 function openAlbumCategory(cat){currentAlbumCat=cat;if(el('albums-cat-title'))el('albums-cat-title').textContent=getCatIcon(cat)+' '+cat;var catAlbums=albums.filter(function(a){return (a.category||'Sin categoria')===cat;});if(el('albums-cat-sub'))el('albums-cat-sub').textContent=catAlbums.length+(catAlbums.length===1?' album':' albumes');var list=el('albums-list');if(list){list.innerHTML=catAlbums.map(function(a){var s=stats(a);var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=a.cover?'<img src="'+a.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#128218;</div>';return'<div class="al-card" onclick="openAlbum(\''+a.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+a.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+(a.hasSpecial?' - '+a.specialIds.length+' esp':'')+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');}showView('view-albums-cat');}
-function renderTazosCategories(){var grid=el('tazos-cat-grid');if(!grid)return;if(!tazos.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>Sin tazos aun</h3><p>Toca el + para empezar</p></div>';return;}var cats={};tazos.forEach(function(t){var cat=t.category||'Sin categoria';if(!cats[cat])cats[cat]={items:[],hv:0,total:0};cats[cat].items.push(t);var s=tazoStats(t);cats[cat].hv+=s.hv;cats[cat].total+=s.total;});var catKeys=Object.keys(cats).sort();if(catKeys.length===1&&catKeys[0]==='Sin categoria'){openTazoCategory('Sin categoria');return;}grid.innerHTML='';catKeys.forEach(function(cat){var g=cats[cat];var pct=g.total>0?Math.round(g.hv/g.total*100):0;grid.appendChild(makeCatFolder(cat,g.items.length+(g.items.length===1?' coleccion':' colecciones'),pct,openTazoCategory));});if(el('tazos-count2'))el('tazos-count2').textContent=tazos.length+(tazos.length===1?' coleccion':' colecciones');}
+function renderTazosCategories(){var grid=el('tazos-cat-grid');if(!grid)return;if(!tazos.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><h3>Sin tazos aun</h3><p>Toca el + para empezar</p></div>';return;}var cats={};tazos.forEach(function(t){var cat=t.category||'Sin categoria';if(!cats[cat])cats[cat]={items:[],hv:0,total:0};cats[cat].items.push(t);var s=tazoStats(t);cats[cat].hv+=s.hv;cats[cat].total+=s.total;});var catKeys=Object.keys(cats).sort();if(catKeys.length===1){openTazoCategory(catKeys[0]);return;}grid.innerHTML='';catKeys.forEach(function(cat){var g=cats[cat];var pct=g.total>0?Math.round(g.hv/g.total*100):0;grid.appendChild(makeCatFolder(cat,g.items.length+(g.items.length===1?' coleccion':' colecciones'),pct,openTazoCategory));});if(el('tazos-count2'))el('tazos-count2').textContent=tazos.length+(tazos.length===1?' coleccion':' colecciones');}
 function openTazoCategory(cat){currentTazoCat=cat;if(el('tazos-cat-title'))el('tazos-cat-title').textContent=getCatIcon(cat)+' '+cat;var catTazos=tazos.filter(function(t){return (t.category||'Sin categoria')===cat;});if(el('tazos-cat-sub'))el('tazos-cat-sub').textContent=catTazos.length+(catTazos.length===1?' coleccion':' colecciones');var list=el('tazos-list');if(list){list.innerHTML=catTazos.map(function(t){var s=tazoStats(t);var pct=s.total>0?Math.round(s.hv/s.total*100):0;var cov=t.cover?'<img src="'+t.cover+'" class="al-cover" alt="">':'<div class="al-cover-ph">&#9711;</div>';return'<div class="al-card" onclick="openTazoDetail(\''+t.id+'\')">'+cov+'<div class="al-info"><div class="al-name">'+t.name+'</div><div class="al-sub">'+s.hv+'/'+s.total+' - '+s.ms+' faltan</div><div class="minibar"><div class="minibar-f" style="width:'+pct+'%"></div></div></div><div class="al-pct">'+pct+'%</div></div>';}).join('');}showView('view-tazos-cat');}
 </script>
 </body>
