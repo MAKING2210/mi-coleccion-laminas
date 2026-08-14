@@ -963,8 +963,8 @@ function showView(id){document.querySelectorAll('#app .view').forEach(function(v
 function goBack(){
   var active=document.querySelector('#app .view.active');
   var id=active?active.id:'';
-  if(id==='view-album'){if(currentAlbumCat){openAlbumCategory(currentAlbumCat);}else{renderAlbumCategories();showView('view-albums-list');}}
-  else if(id==='view-tazo-detail'){if(currentTazoCat){openTazoCategory(currentTazoCat);}else{renderTazosCategories();showView('view-tazos-list');}}
+  if(id==='view-album'){var a=alb();var cat=a?(a.category||'Sin categoria'):currentAlbumCat;if(cat){openAlbumCategory(cat);}else{renderAlbumCategories();showView('view-albums-list');}}
+  else if(id==='view-tazo-detail'){var t=tc();var tcat=t?(t.category||'Sin categoria'):currentTazoCat;if(tcat){openTazoCategory(tcat);}else{renderTazosCategories();showView('view-tazos-list');}}
   else if(id==='view-albums-cat'){renderAlbumCategories();showView('view-albums-list');}
   else if(id==='view-tazos-cat'){renderTazosCategories();showView('view-tazos-list');}
   else{goHome();}
@@ -1252,9 +1252,9 @@ function openNote(id,sec){var a=alb();if(!a)return;editLam=id;editSec=sec;var x=
 function saveNote(){var a=alb();if(!a)return;if(!a.stickers)a.stickers={};var x=a.stickers[editLam]||{state:'missing',type:editSec==='special'?(a.defaultSpType||'holo'):'normal',note:'',qty:0};a.stickers[editLam]=Object.assign({},x,{note:el('note-txt').value.trim()});closeModal('modal-note');toast('Nota guardada');renderGrid(editSec);scheduleSave(a);}
 
 // EDIT
-function openEditModal(){var a=alb();if(!a)return;editCover=null;el('edit-name').value=a.name;if(el('edit-category'))el('edit-category').value=a.category||'Sin categoria';if(a.cover){el('edit-prev').src=a.cover;el('edit-prev').style.display='block';el('edit-hint').style.display='none';}else{el('edit-prev').style.display='none';el('edit-hint').style.display='block';}el('edit-cover-input').value='';refreshEditInfo();openModal('modal-edit');}
+function openEditModal(){var a=alb();if(!a)return;editCover=null;el('edit-name').value=a.name;if(el('edit-category')){ensureCatOption('edit-category',a.category);el('edit-category').value=a.category||'';}if(a.cover){el('edit-prev').src=a.cover;el('edit-prev').style.display='block';el('edit-hint').style.display='none';}else{el('edit-prev').style.display='none';el('edit-hint').style.display='block';}el('edit-cover-input').value='';refreshEditInfo();openModal('modal-edit');}
 function refreshEditInfo(){var a=alb();if(!a)return;var nFmt={number:'numeros',letter:'letras'}[a.fmtNormal]||'numeros';var nIds=a.normalIds||[];var sIds=a.specialIds||[];el('info-n').textContent=nIds.length+' laminas ('+nFmt+') - ultima: '+(nIds.length?nIds[nIds.length-1]:'-');el('edit-sp-wrap').style.display=a.hasSpecial?'':'none';if(a.hasSpecial){var sFmt={number:'numeros',letter:'letras'}[a.fmtSpecial]||'numeros';el('info-sp').textContent=sIds.length+' especiales ('+sFmt+') - ultima: '+(sIds.length?sIds[sIds.length-1]:'-');document.querySelectorAll('#edit-sp-fmt .num-opt').forEach(function(b){b.classList.toggle('sel',b.dataset.fmt===a.fmtSpecial);});}}
-function saveEdit(){var a=alb();if(!a)return;var newName=el('edit-name').value.trim();if(newName)a.name=newName;if(editCover)a.cover=editCover;if(el('edit-category'))a.category=el('edit-category').value||'Sin categoria';dbSave(a);renderAlbum();renderHome();toast('Guardado');}
+function saveEdit(){var a=alb();if(!a)return;var newName=el('edit-name').value.trim();if(newName)a.name=newName;if(editCover)a.cover=editCover;if(el('edit-category'))a.category=el('edit-category').value||null;currentAlbumCat=a.category||'Sin categoria';dbSave(a);renderAlbum();renderHome();toast('Guardado');}
 function modIds(sec,action){
   var a=alb();if(!a)return;
   var inputId=sec==='normal'?'edit-add-n':'edit-add-sp';
@@ -1897,6 +1897,7 @@ function deleteTazoImg(){
 function openEditTazoModal(){
   var t=tc();if(!t)return;tazoEditCover=null;
   el('tazo-edit-name').value=t.name;
+  if(el('tazo-edit-category')){ensureCatOption('tazo-edit-category',t.category);el('tazo-edit-category').value=t.category||'';}
   if(t.cover){el('tazo-edit-prev').src=t.cover;el('tazo-edit-prev').style.display='block';el('tazo-edit-hint').style.display='none';}
   else{el('tazo-edit-prev').style.display='none';el('tazo-edit-hint').style.display='block';}
   el('tazo-edit-cover-input').value='';el('tazo-edit-qty').value='';
@@ -1907,6 +1908,8 @@ function saveTazoEdit(){
   var t=tc();if(!t)return;
   var newName=el('tazo-edit-name').value.trim();if(newName)t.name=newName;
   if(tazoEditCover)t.cover=tazoEditCover;
+  if(el('tazo-edit-category'))t.category=el('tazo-edit-category').value||null;
+  currentTazoCat=t.category||'Sin categoria';
   dbSaveTazo(t);renderTazoDetail();renderTazosHome();toast('Guardado');
 }
 function modTazos(action){
@@ -2014,6 +2017,7 @@ var DBZ_METALIX_ITEMS=[{"num": 1, "img": "data:image/jpeg;base64,/9j/4AAQSkZJRgA
 var currentAlbumCat=null,currentTazoCat=null;
 var CAT_ICONS={'Dragon Ball':'🐉','Dragon Ball Z':'🐉','Dragon Ball GT':'🐉','Dragon Ball Super':'🐉','Pokemon':'⚡','FIFA':'⚽','One Piece':'🏴','Naruto':'🍥','Sin categoria':'📁'};
 function getCatIcon(cat){return CAT_ICONS[cat]||'📁';}
+function ensureCatOption(selId,cat){if(!cat)return;var sel=el(selId);if(!sel)return;var exists=Array.from(sel.options).some(function(o){return o.value===cat;});if(!exists){var opt=document.createElement('option');opt.value=cat;opt.textContent=cat;sel.appendChild(opt);}}
 function toggleNewCategory(selId,inpId){var inp=el(inpId),sel=el(selId);if(inp.style.display==='none'){inp.style.display='';inp.focus();sel.style.display='none';}else{inp.style.display='none';sel.style.display='';}}
 function getSelectedCategory(selId,inpId){var inp=el(inpId);if(inp&&inp.style.display!=='none'&&inp.value.trim())return inp.value.trim();var sel=el(selId);return sel?sel.value||'Sin categoria':'Sin categoria';}
 function makeCatFolder(cat,sub,pct,clickFn){var div=document.createElement('div');div.className='cat-folder';div.innerHTML='<div class="cat-folder-icon">'+getCatIcon(cat)+'</div><div class="cat-folder-name">'+cat+'</div><div class="cat-folder-sub">'+sub+'</div><div class="cat-folder-bar"><div class="cat-folder-bar-f" style="width:'+pct+'%"></div></div>';div.addEventListener('click',function(){clickFn(cat);});return div;}
