@@ -611,6 +611,16 @@ body{padding-bottom:60px}
     <h2>Editar album</h2>
     <div class="field"><label>Imagen de tapa</label><div class="cover-up"><input type="file" accept="image/*" id="edit-cover-input" onchange="previewCover(this,'edit-prev','edit-hint')"><img id="edit-prev" alt=""><div id="edit-hint" class="cover-up-hint"><strong>&#128247;</strong>Cambiar imagen</div></div></div>
     <div class="field"><label>Nombre</label><input id="edit-name"></div>
+    <div class="field"><label>Categoria</label><select class="cat-select" id="edit-category"><option value="">Sin categoria</option>
+        <option value="Dragon Ball">Dragon Ball</option>
+        <option value="Dragon Ball Z">Dragon Ball Z</option>
+        <option value="Dragon Ball GT">Dragon Ball GT</option>
+        <option value="Dragon Ball Super">Dragon Ball Super</option>
+        <option value="Pokemon">Pokemon</option>
+        <option value="FIFA">FIFA</option>
+        <option value="One Piece">One Piece</option>
+        <option value="Naruto">Naruto</option>
+        <option value="Sin categoria">Sin categoria</option></select></div>
     <button class="btn btn-success btn-full" onclick="saveEdit()" style="margin-bottom:1rem">Guardar nombre e imagen</button>
     <div style="border-top:1px solid var(--bdr);margin:4px 0 14px"></div>
     <p style="font-size:13px;font-weight:700;margin-bottom:10px">Laminas normales</p>
@@ -738,6 +748,16 @@ body{padding-bottom:60px}
       <div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewTazoCover(this)"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>&#128247;</strong>Cambiar imagen</div></div>
     </div>
     <div class="field"><label>Nombre</label><input id="tazo-edit-name"></div>
+    <div class="field"><label>Categoria</label><select class="cat-select" id="tazo-edit-category"><option value="">Sin categoria</option>
+        <option value="Dragon Ball">Dragon Ball</option>
+        <option value="Dragon Ball Z">Dragon Ball Z</option>
+        <option value="Dragon Ball GT">Dragon Ball GT</option>
+        <option value="Dragon Ball Super">Dragon Ball Super</option>
+        <option value="Pokemon">Pokemon</option>
+        <option value="FIFA">FIFA</option>
+        <option value="One Piece">One Piece</option>
+        <option value="Naruto">Naruto</option>
+        <option value="Sin categoria">Sin categoria</option></select></div>
     <button class="btn btn-success btn-full" onclick="saveTazoEdit()" style="margin-bottom:1rem">&#10003; Guardar nombre e imagen</button>
     <div style="border-top:1px solid var(--bdr);margin:4px 0 14px"></div>
     <div class="field"><label>Agregar o quitar tazos al final</label>
@@ -867,6 +887,16 @@ body{padding-bottom:60px}
     <h2>Editar coleccion</h2>
     <div class="field"><label>Imagen de portada</label><div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewTazoCover(this)"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>📷</strong>Cambiar imagen</div></div></div>
     <div class="field"><label>Nombre</label><input id="tazo-edit-name"></div>
+    <div class="field"><label>Categoria</label><select class="cat-select" id="tazo-edit-category"><option value="">Sin categoria</option>
+        <option value="Dragon Ball">Dragon Ball</option>
+        <option value="Dragon Ball Z">Dragon Ball Z</option>
+        <option value="Dragon Ball GT">Dragon Ball GT</option>
+        <option value="Dragon Ball Super">Dragon Ball Super</option>
+        <option value="Pokemon">Pokemon</option>
+        <option value="FIFA">FIFA</option>
+        <option value="One Piece">One Piece</option>
+        <option value="Naruto">Naruto</option>
+        <option value="Sin categoria">Sin categoria</option></select></div>
     <button class="btn btn-success btn-full" onclick="saveTazoEdit()" style="margin-bottom:1rem">💾 Guardar nombre e imagen</button>
     <div style="border-top:1px solid var(--bdr);margin:4px 0 14px"></div>
     <div class="field"><label>Agregar o quitar tazos al final</label><div style="display:flex;gap:8px"><input id="tazo-edit-qty" type="number" placeholder="Cantidad" min="1" style="flex:1"><button class="btn btn-sm btn-primary" onclick="modTazos('add')">+ Agregar</button><button class="btn btn-sm btn-danger" onclick="modTazos('remove')">- Borrar</button></div><p id="tazo-info" style="font-size:11px;color:var(--muted);margin-top:4px">-</p></div>
@@ -933,8 +963,10 @@ function showView(id){document.querySelectorAll('#app .view').forEach(function(v
 function goBack(){
   var active=document.querySelector('#app .view.active');
   var id=active?active.id:'';
-  if(id==='view-album'){renderHome();showView('view-albums-list');}
-  else if(id==='view-tazo-detail'){renderTazosHome();showView('view-tazos-list');}
+  if(id==='view-album'){if(currentAlbumCat){openAlbumCategory(currentAlbumCat);}else{renderAlbumCategories();showView('view-albums-list');}}
+  else if(id==='view-tazo-detail'){if(currentTazoCat){openTazoCategory(currentTazoCat);}else{renderTazosCategories();showView('view-tazos-list');}}
+  else if(id==='view-albums-cat'){renderAlbumCategories();showView('view-albums-list');}
+  else if(id==='view-tazos-cat'){renderTazosCategories();showView('view-tazos-list');}
   else{goHome();}
 }
 // ── SECTION NAVIGATION ────────────────────────────────
@@ -1034,6 +1066,7 @@ function loadAlbums(){
     if(r.error){toast('Error cargando');console.error(r.error);return;}
     albums=(r.data||[]).map(mapAlbum);
     renderHome();
+    renderAlbumCategories();
     var hashMatch=location.hash.match(/#a=([a-zA-Z0-9-]+)/);
     if(hashMatch&&albums.some(function(a){return a.id===hashMatch[1];})){
       openAlbum(hashMatch[1]);
@@ -1073,6 +1106,8 @@ function renderHome(){
   if(el('albums-count'))el('albums-count').textContent=ac+(ac===1?' album':' albumes');
   if(el('home-count'))el('home-count').textContent='Tu coleccion personal';
   renderTazosHome();
+  renderAlbumCategories();
+  renderTazosCategories();
 }
 
 // NEW ALBUM
@@ -1208,9 +1243,9 @@ function openNote(id,sec){var a=alb();if(!a)return;editLam=id;editSec=sec;var x=
 function saveNote(){var a=alb();if(!a)return;if(!a.stickers)a.stickers={};var x=a.stickers[editLam]||{state:'missing',type:editSec==='special'?(a.defaultSpType||'holo'):'normal',note:'',qty:0};a.stickers[editLam]=Object.assign({},x,{note:el('note-txt').value.trim()});closeModal('modal-note');toast('Nota guardada');renderGrid(editSec);scheduleSave(a);}
 
 // EDIT
-function openEditModal(){var a=alb();if(!a)return;editCover=null;el('edit-name').value=a.name;if(a.cover){el('edit-prev').src=a.cover;el('edit-prev').style.display='block';el('edit-hint').style.display='none';}else{el('edit-prev').style.display='none';el('edit-hint').style.display='block';}el('edit-cover-input').value='';refreshEditInfo();openModal('modal-edit');}
+function openEditModal(){var a=alb();if(!a)return;editCover=null;el('edit-name').value=a.name;if(el('edit-category'))el('edit-category').value=a.category||'Sin categoria';if(a.cover){el('edit-prev').src=a.cover;el('edit-prev').style.display='block';el('edit-hint').style.display='none';}else{el('edit-prev').style.display='none';el('edit-hint').style.display='block';}el('edit-cover-input').value='';refreshEditInfo();openModal('modal-edit');}
 function refreshEditInfo(){var a=alb();if(!a)return;var nFmt={number:'numeros',letter:'letras'}[a.fmtNormal]||'numeros';var nIds=a.normalIds||[];var sIds=a.specialIds||[];el('info-n').textContent=nIds.length+' laminas ('+nFmt+') - ultima: '+(nIds.length?nIds[nIds.length-1]:'-');el('edit-sp-wrap').style.display=a.hasSpecial?'':'none';if(a.hasSpecial){var sFmt={number:'numeros',letter:'letras'}[a.fmtSpecial]||'numeros';el('info-sp').textContent=sIds.length+' especiales ('+sFmt+') - ultima: '+(sIds.length?sIds[sIds.length-1]:'-');document.querySelectorAll('#edit-sp-fmt .num-opt').forEach(function(b){b.classList.toggle('sel',b.dataset.fmt===a.fmtSpecial);});}}
-function saveEdit(){var a=alb();if(!a)return;var newName=el('edit-name').value.trim();if(newName)a.name=newName;if(editCover)a.cover=editCover;dbSave(a);renderAlbum();renderHome();toast('Guardado');}
+function saveEdit(){var a=alb();if(!a)return;var newName=el('edit-name').value.trim();if(newName)a.name=newName;if(editCover)a.cover=editCover;if(el('edit-category'))a.category=el('edit-category').value||'Sin categoria';dbSave(a);renderAlbum();renderHome();toast('Guardado');}
 function modIds(sec,action){
   var a=alb();if(!a)return;
   var inputId=sec==='normal'?'edit-add-n':'edit-add-sp';
@@ -1308,6 +1343,7 @@ function loadTazos(){
     if(r.error){toast('Error cargando tazos');return;}
     tazos=(r.data||[]).map(mapTazo);
     renderTazosHome();
+    renderTazosCategories();
   });
 }
 function dbSaveTazo(t){
