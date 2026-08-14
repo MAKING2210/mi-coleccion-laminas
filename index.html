@@ -201,6 +201,28 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 .folder-bar{height:4px;background:var(--bdr);border-radius:2px;margin-top:.75rem;overflow:hidden}
 .folder-bar-f{height:100%;background:linear-gradient(90deg,var(--blue),var(--holo-b));border-radius:2px;transition:width .5s}
 @media(max-width:480px){.folder-card{padding:1.2rem .75rem}.folder-icon{font-size:36px}}
+
+/* PRESET COLLECTIONS */
+.preset-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.preset-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:var(--r);cursor:pointer;transition:all .13s}
+.preset-item:hover{border-color:var(--blue);background:var(--blue-l)}
+.preset-item.sel{border-color:var(--blue);border-width:2px;background:var(--blue-l)}
+.preset-icon{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bdr);display:flex;align-items:center;justify-content:center;font-size:20px}
+.preset-icon img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+.preset-info{flex:1}
+.preset-name{font-size:14px;font-weight:600;color:var(--txt)}
+.preset-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.create-type-tabs{display:flex;gap:8px;margin-bottom:1rem}
+.create-type-tab{flex:1;padding:10px;border:1.5px solid var(--bdr);border-radius:var(--r);background:var(--surf);cursor:pointer;text-align:center;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);transition:all .13s}
+.create-type-tab.sel{border-color:var(--blue);border-width:2px;background:var(--blue-l);color:var(--blue)}
+
+/* ADMIN PANEL */
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:1rem}
+.admin-tazo{width:80px;height:80px;border-radius:50%;border:2px dashed var(--bdr-md);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:var(--bg)}
+.admin-tazo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.admin-tazo input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.admin-tazo-num{font-size:11px;font-weight:700;color:var(--muted)}
+.admin-tazo.has-img{border-style:solid;border-color:var(--green)}
 /* TAZOS MODULE */
 .section-tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1rem}
 .section-tab{padding:12px 16px;border:none;background:none;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
@@ -286,6 +308,7 @@ body{padding-bottom:60px}
       <span class="nav-user" id="nav-user" onclick="openNameModal()" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" title="Tocar para cambiar tu nombre"></span>
       <button class="btn btn-sm" id="nav-back" style="display:none" onclick="goBack()">← Volver</button>
       <button class="btn btn-sm" id="btn-logout" onclick="logout()">salir</button>
+      <button class="btn btn-sm" id="btn-admin" style="display:none" onclick="openAdminPanel()" title="Panel Admin">⚙️</button>
     </div>
   </nav>
 
@@ -610,12 +633,32 @@ body{padding-bottom:60px}
 <div class="overlay" id="modal-new-tazo">
   <div class="modal">
     <h2>Nueva coleccion de tazos</h2>
-    <div class="field"><label>Imagen de tapa</label>
-      <div class="cover-up"><input type="file" accept="image/*" id="tazo-cover-input" onchange="previewCover(this,'tazo-cover-prev','tazo-cover-hint')"><img id="tazo-cover-prev" alt=""><div id="tazo-cover-hint" class="cover-up-hint"><strong>&#128247;</strong>Subir imagen de tapa</div></div>
+    <div class="create-type-tabs">
+      <button class="create-type-tab sel" id="tab-preset" onclick="switchCreateTab('preset')">📦 Coleccion existente</button>
+      <button class="create-type-tab" id="tab-custom" onclick="switchCreateTab('custom')">✏️ Personalizada</button>
     </div>
-    <div class="field"><label>Nombre de la coleccion</label><input id="tazo-inp-name" placeholder="Ej: Tazos Pokemon, DBZ Metaliz..."></div>
-    <div class="field"><label>Cantidad de tazos</label><input id="tazo-inp-total" type="number" placeholder="Ej: 60" min="1" max="500"></div>
-    <div class="mactions"><button class="btn" onclick="closeModal('modal-new-tazo')">Cancelar</button><button class="btn btn-primary" onclick="createTazoCollection()">Crear</button></div>
+
+    <!-- PRESET -->
+    <div id="create-preset-section">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Elegí una coleccion con imágenes precargadas:</p>
+      <div class="preset-list" id="preset-list">
+        <div style="text-align:center;padding:1rem;color:var(--muted);font-size:13px">Cargando colecciones...</div>
+      </div>
+    </div>
+
+    <!-- CUSTOM -->
+    <div id="create-custom-section" style="display:none">
+      <div class="field"><label>Imagen de tapa</label>
+        <div class="cover-up"><input type="file" accept="image/*" id="tazo-cover-input" onchange="previewCover(this,'tazo-cover-prev','tazo-cover-hint')"><img id="tazo-cover-prev" alt=""><div id="tazo-cover-hint" class="cover-up-hint"><strong>&#128247;</strong>Subir imagen de tapa</div></div>
+      </div>
+      <div class="field"><label>Nombre de la coleccion</label><input id="tazo-inp-name" placeholder="Ej: Tazos Pokemon, DBZ Metaliz..."></div>
+      <div class="field"><label>Cantidad de tazos</label><input id="tazo-inp-total" type="number" placeholder="Ej: 60" min="1" max="500"></div>
+    </div>
+
+    <div class="mactions">
+      <button class="btn" onclick="closeModal('modal-new-tazo')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-create-tazo" onclick="createTab==='preset'?createTazoFromPreset():createTazoCollection()">Crear</button>
+    </div>
   </div>
 </div>
 
@@ -685,6 +728,38 @@ body{padding-bottom:60px}
 </div>
 
 <!-- REP MODAL TAZOS (reutiliza el mismo de laminas) -->
+
+<!-- PANEL ADMIN - subir imagenes colecciones predefinidas -->
+<div class="overlay" id="modal-admin">
+  <div class="modal" style="max-width:600px">
+    <h2>Panel Admin — Colecciones predefinidas</h2>
+    <div class="field">
+      <label>Seleccionar coleccion</label>
+      <select id="admin-collection-select" onchange="loadAdminCollection()">
+        <option value="">-- Elegir --</option>
+      </select>
+    </div>
+    <div id="admin-collection-info" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px" id="admin-info-text">-</p>
+      <div class="admin-grid" id="admin-tazo-grid"></div>
+      <div style="margin-top:1rem;display:flex;gap:8px">
+        <button class="btn btn-success btn-full" onclick="saveAdminCollection()">&#10003; Guardar todo</button>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--bdr);margin:1rem 0"></div>
+    <p style="font-size:13px;font-weight:700;margin-bottom:8px">Crear nueva coleccion predefinida</p>
+    <div class="field"><label>Nombre</label><input id="admin-new-name" placeholder="Ej: DBZ Metalix"></div>
+    <div class="field"><label>Tipo</label>
+      <select id="admin-new-type">
+        <option value="tazos">Tazos</option>
+        <option value="albums">Albums</option>
+      </select>
+    </div>
+    <div class="field"><label>Cantidad</label><input id="admin-new-total" type="number" placeholder="60" min="1" max="500"></div>
+    <button class="btn btn-primary" onclick="createPresetCollection()">Crear coleccion predefinida</button>
+    <div class="mactions"><button class="btn" onclick="closeModal('modal-admin')">Cerrar</button></div>
+  </div>
+</div>
 
 <div class="overlay" id="modal-forgot">
   <div class="modal" style="max-width:320px">
@@ -1181,10 +1256,7 @@ function tazoAlb(){return tazos.find(function(t){return t.id===taid;});}
 
 // HOME TAZOS
 function openNewTazoModal(){
-  tazoNewCover=null;
-  ['tazo-inp-name','tazo-inp-total'].forEach(function(id){el(id).value='';});
-  el('tazo-cover-prev').style.display='none';el('tazo-cover-hint').style.display='block';el('tazo-cover-input').value='';
-  openModal('modal-new-tazo');
+  openNewTazoModalWithPresets();
 }
 function createTazoCollection(){
   var name=el('tazo-inp-name').value.trim();if(!name){toast('Escribe el nombre');return;}
@@ -1374,7 +1446,7 @@ function initApp(){
       var name=user.user_metadata&&user.user_metadata.user_name?user.user_metadata.user_name:(user.email?user.email.split('@')[0]:'Coleccionista');
       el('nav-user').textContent=name;el('greeting').textContent='Hola, '+name.split(' ')[0];
       el('view-login').style.display='none';el('app').style.display='block';el('loading').classList.add('hide');
-      loadAlbums();loadTazos();
+      checkAdmin();loadAlbums();loadTazos();
     }
     if(event==='SIGNED_OUT'){user=null;albums=[];tazos=[];el('app').style.display='none';el('view-login').style.display='flex';el('loading').classList.add('hide');}
   });
@@ -1387,7 +1459,7 @@ function initApp(){
       var name=user.user_metadata&&user.user_metadata.user_name?user.user_metadata.user_name:(user.email?user.email.split('@')[0]:'Coleccionista');
       el('nav-user').textContent=name;el('greeting').textContent='Hola, '+name.split(' ')[0];
       el('view-login').style.display='none';el('app').style.display='block';el('loading').classList.add('hide');
-      loadAlbums();loadTazos();
+      checkAdmin();loadAlbums();loadTazos();
     } else if(!r.data||!r.data.session){
       el('loading').classList.add('hide');el('view-login').style.display='flex';
     }
@@ -1519,10 +1591,7 @@ function tazoStats(t){
 
 // NEW
 function openNewTazoModal(){
-  tazoNewCover=null;
-  ['tazo-inp-name','tazo-inp-total'].forEach(function(id){el(id).value='';});
-  el('tazo-cover-prev').style.display='none';el('tazo-cover-hint').style.display='block';el('tazo-cover-input').value='';
-  openModal('modal-new-tazo');
+  openNewTazoModalWithPresets();
 }
 function createTazoCollection(){
   var name=el('tazo-inp-name').value.trim();if(!name){toast('Escribe el nombre');return;}
