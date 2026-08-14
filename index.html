@@ -1244,6 +1244,7 @@ function dbSaveTazo(t){
   var payload={
     id:t.id,user_id:user.id,name:t.name,total:t.total,
     tazos:t.tazos||[],stickers:t.stickers||{},
+    cover:t.cover||null,
     updated_at:new Date().toISOString()
   };
   sb.from('tazos').upsert(payload).then(function(r){
