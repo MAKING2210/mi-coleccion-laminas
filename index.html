@@ -728,13 +728,6 @@ body{padding-bottom:60px}
 </div>
 
 <!-- IMAGEN TAZO -->
-<div class="overlay" id="modal-tazo-img">
-  <div class="modal" style="max-width:320px;text-align:center">
-    <h2>Tazo <span id="tazo-img-id">-</span></h2>
-    <div class="field"><label>Imagen de este tazo</label><div class="cover-up" style="height:140px"><input type="file" accept="image/*" id="tazo-img-input" onchange="previewTazoImg(this)"><img id="tazo-img-prev" alt="" style="display:none;width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto"><div id="tazo-img-hint" class="cover-up-hint"><strong>📷</strong>Foto del tazo</div></div></div>
-    <div class="mactions"><button class="btn" onclick="closeModal('modal-tazo-img')">Cancelar</button><button class="btn btn-primary" onclick="saveTazoImg()">Guardar</button></div>
-  </div>
-</div>
 
 <!-- MENU TAZO (toque largo) -->
 <div class="overlay" id="modal-tazo-menu">
@@ -1290,7 +1283,7 @@ function saveTazoRepeated(){
   closeModal('modal-tazo-rep');toast(qty+' repetidos');
   renderTazoGrid();renderTazoDetail();renderTazosHome();scheduleSaveTazo(t);
 }
-function tazoMenuImg(){closeModal('modal-tazo-menu');el('tazo-img-id').textContent=curTazoImgId;curTazoImgB64=null;el('tazo-img-prev').style.display='none';el('tazo-img-hint').style.display='block';el('tazo-img-input').value='';openModal('modal-tazo-img');}
+
 function previewTazoImg(inp){
   var f=inp.files[0];if(!f)return;
   var img=new Image();var r=new FileReader();
@@ -1302,15 +1295,6 @@ function previewTazoImg(inp){
     curTazoImgB64=c.toDataURL('image/jpeg',0.75);
     el('tazo-img-prev').src=curTazoImgB64;el('tazo-img-prev').style.display='block';el('tazo-img-hint').style.display='none';
   };img.src=e.target.result;};r.readAsDataURL(f);
-}
-function saveTazoImg(){
-  if(!curTazoImgB64){toast('Selecciona una imagen');return;}
-  var t=tazoAlb();if(!t)return;
-  if(!t.stickers)t.stickers={};
-  var x=t.stickers[curTazoImgId]||{state:'missing',img:null,qty:0};
-  t.stickers[curTazoImgId]=Object.assign({},x,{img:curTazoImgB64});
-  closeModal('modal-tazo-img');toast('Imagen guardada');
-  renderTazoGrid();scheduleSaveTazo(t);
 }
 
 // EDIT TAZO COLLECTION
