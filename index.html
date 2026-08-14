@@ -223,6 +223,20 @@ body{font-family:var(--f-body);background:var(--bg);color:var(--txt);min-height:
 .admin-tazo input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .admin-tazo-num{font-size:11px;font-weight:700;color:var(--muted)}
 .admin-tazo.has-img{border-style:solid;border-color:var(--green)}
+
+/* CATEGORY FOLDERS */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:1rem}
+.cat-folder{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--rl);padding:1rem;cursor:pointer;transition:all .15s;text-align:center}
+.cat-folder:hover{border-color:var(--blue);box-shadow:0 4px 12px rgba(140,47,57,.1);transform:translateY(-2px)}
+.cat-folder:active{transform:scale(.97)}
+.cat-folder-icon{font-size:36px;margin-bottom:8px}
+.cat-folder-name{font-family:var(--f-display);font-size:14px;font-weight:700;color:var(--txt);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-folder-sub{font-size:11px;color:var(--muted)}
+.cat-folder-bar{height:3px;background:var(--bdr);border-radius:2px;margin-top:8px;overflow:hidden}
+.cat-folder-bar-f{height:100%;background:linear-gradient(90deg,var(--blue),var(--holo-b));border-radius:2px}
+.cat-select{width:100%;padding:9px 11px;border:1px solid var(--bdr-md);border-radius:var(--r);font-size:14px;font-family:var(--f-body);color:var(--txt);background:var(--surf);outline:none;margin-bottom:6px}
+.cat-select:focus{border-color:var(--blue)}
+@media(max-width:480px){.cat-grid{grid-template-columns:repeat(2,1fr)}}
 /* TAZOS MODULE */
 .section-tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--bdr);padding:0 1rem}
 .section-tab{padding:12px 16px;border:none;background:none;font-family:var(--f-body);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
@@ -335,18 +349,34 @@ body{padding-bottom:60px}
     </div>
   </div>
 
-  <!-- LISTA DE ALBUMS -->
+  <!-- LISTA DE ALBUMS - CATEGORIAS -->
   <div id="view-albums-list" class="view">
     <div class="wrap">
       <div class="home-top"><h2>📚 Albums</h2><p id="albums-count">Tus albumes de laminas</p></div>
+      <div class="cat-grid" id="albums-cat-grid"></div>
+    </div>
+  </div>
+
+  <!-- ALBUMS DE UNA CATEGORIA -->
+  <div id="view-albums-cat" class="view">
+    <div class="wrap">
+      <div class="home-top"><h2 id="albums-cat-title">-</h2><p id="albums-cat-sub">-</p></div>
       <div class="albums-list" id="albums-list"></div>
     </div>
   </div>
 
-  <!-- LISTA DE TAZOS -->
+  <!-- LISTA DE TAZOS - CATEGORIAS -->
   <div id="view-tazos-list" class="view">
     <div class="wrap">
       <div class="home-top"><h2>⭕ Tazos</h2><p id="tazos-count2">Tus colecciones de tazos</p></div>
+      <div class="cat-grid" id="tazos-cat-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAZOS DE UNA CATEGORIA -->
+  <div id="view-tazos-cat" class="view">
+    <div class="wrap">
+      <div class="home-top"><h2 id="tazos-cat-title">-</h2><p id="tazos-cat-sub">-</p></div>
       <div class="albums-list" id="tazos-list"></div>
     </div>
   </div>
@@ -531,6 +561,25 @@ body{padding-bottom:60px}
     <h2>Nuevo album</h2>
     <div class="field"><label>Imagen de tapa</label><div class="cover-up"><input type="file" accept="image/*" id="cover-input" onchange="previewCover(this,'cover-prev','cover-hint')"><img id="cover-prev" alt=""><div id="cover-hint" class="cover-up-hint"><strong>&#128247;</strong>Subir imagen de tapa</div></div></div>
     <div class="field"><label>Nombre del album</label><input id="inp-name" placeholder="Ej: Dragon Ball, FIFA 2026..."></div>
+    <div class="field"><label>Categoria</label>
+      <select class="cat-select" id="inp-category">
+        <option value="">Sin categoria</option>
+        <option value="Dragon Ball">Dragon Ball</option>
+        <option value="Dragon Ball Z">Dragon Ball Z</option>
+        <option value="Dragon Ball GT">Dragon Ball GT</option>
+        <option value="Dragon Ball Super">Dragon Ball Super</option>
+        <option value="Pokemon">Pokemon</option>
+        <option value="FIFA">FIFA</option>
+        <option value="One Piece">One Piece</option>
+        <option value="Naruto">Naruto</option>
+        <option value="Yu-Gi-Oh">Yu-Gi-Oh</option>
+        <option value="Marvel">Marvel</option>
+        <option value="DC Comics">DC Comics</option>
+        <option value="Star Wars">Star Wars</option>
+      </select>
+      <input id="inp-category-new" placeholder="O escribe una nueva categoria..." style="display:none">
+      <button class="btn btn-sm" style="margin-top:4px" onclick="toggleNewCategory('inp-category','inp-category-new')">+ Nueva categoria</button>
+    </div>
     <div class="field"><label>Numeracion de laminas normales</label>
       <div class="num-toggle" id="fmt-n-toggle">
         <button class="num-opt sel" data-fmt="number" onclick="selFmt(this,'normal')"><span class="num-opt-ico">1 2 3</span><div class="num-opt-name">Numeros</div><div class="num-opt-ex">1, 2, 3 ... 200</div></button>
@@ -652,6 +701,25 @@ body{padding-bottom:60px}
         <div class="cover-up"><input type="file" accept="image/*" id="tazo-cover-input" onchange="previewCover(this,'tazo-cover-prev','tazo-cover-hint')"><img id="tazo-cover-prev" alt=""><div id="tazo-cover-hint" class="cover-up-hint"><strong>&#128247;</strong>Subir imagen de tapa</div></div>
       </div>
       <div class="field"><label>Nombre de la coleccion</label><input id="tazo-inp-name" placeholder="Ej: Tazos Pokemon, DBZ Metaliz..."></div>
+    <div class="field"><label>Categoria</label>
+      <select class="cat-select" id="tazo-inp-category">
+        <option value="">Sin categoria</option>
+        <option value="Dragon Ball">Dragon Ball</option>
+        <option value="Dragon Ball Z">Dragon Ball Z</option>
+        <option value="Dragon Ball GT">Dragon Ball GT</option>
+        <option value="Dragon Ball Super">Dragon Ball Super</option>
+        <option value="Pokemon">Pokemon</option>
+        <option value="FIFA">FIFA</option>
+        <option value="One Piece">One Piece</option>
+        <option value="Naruto">Naruto</option>
+        <option value="Yu-Gi-Oh">Yu-Gi-Oh</option>
+        <option value="Marvel">Marvel</option>
+        <option value="DC Comics">DC Comics</option>
+        <option value="Star Wars">Star Wars</option>
+      </select>
+      <input id="tazo-inp-category-new" placeholder="O escribe una nueva categoria..." style="display:none">
+      <button class="btn btn-sm" style="margin-top:4px" onclick="toggleNewCategory('tazo-inp-category','tazo-inp-category-new')">+ Nueva categoria</button>
+    </div>
       <div class="field"><label>Cantidad de tazos</label><input id="tazo-inp-total" type="number" placeholder="Ej: 60" min="1" max="500"></div>
     </div>
 
