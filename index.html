@@ -667,7 +667,7 @@ body{padding-bottom:60px}
   <div class="modal">
     <h2>Editar coleccion</h2>
     <div class="field"><label>Imagen de tapa</label>
-      <div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewCover(this,'tazo-edit-prev','tazo-edit-hint')"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>&#128247;</strong>Cambiar imagen</div></div>
+      <div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewTazoCover(this)"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>&#128247;</strong>Cambiar imagen</div></div>
     </div>
     <div class="field"><label>Nombre</label><input id="tazo-edit-name"></div>
     <button class="btn btn-success btn-full" onclick="saveTazoEdit()" style="margin-bottom:1rem">&#10003; Guardar nombre e imagen</button>
@@ -793,7 +793,7 @@ body{padding-bottom:60px}
 <div class="overlay" id="modal-edit-tazo">
   <div class="modal">
     <h2>Editar coleccion</h2>
-    <div class="field"><label>Imagen de portada</label><div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewCover(this,'tazo-edit-prev','tazo-edit-hint')"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>📷</strong>Cambiar imagen</div></div></div>
+    <div class="field"><label>Imagen de portada</label><div class="cover-up"><input type="file" accept="image/*" id="tazo-edit-cover-input" onchange="previewTazoCover(this)"><img id="tazo-edit-prev" alt=""><div id="tazo-edit-hint" class="cover-up-hint"><strong>📷</strong>Cambiar imagen</div></div></div>
     <div class="field"><label>Nombre</label><input id="tazo-edit-name"></div>
     <button class="btn btn-success btn-full" onclick="saveTazoEdit()" style="margin-bottom:1rem">💾 Guardar nombre e imagen</button>
     <div style="border-top:1px solid var(--bdr);margin:4px 0 14px"></div>
@@ -1385,6 +1385,20 @@ function previewTazoImg(inp){
 }
 
 // EDIT TAZO COLLECTION
+function previewTazoCover(inp){
+  var f=inp.files[0];if(!f)return;
+  var img=new Image();var r=new FileReader();
+  r.onload=function(e){img.onload=function(){
+    var MAX=400;var w=img.width,h=img.height;
+    if(w>MAX||h>MAX){var ratio=Math.min(MAX/w,MAX/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}
+    var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    cv.getContext('2d').drawImage(img,0,0,w,h);
+    var b64=cv.toDataURL('image/jpeg',0.75);
+    if(el('tazo-edit-prev')){el('tazo-edit-prev').src=b64;el('tazo-edit-prev').style.display='block';}
+    if(el('tazo-edit-hint'))el('tazo-edit-hint').style.display='none';
+    tazoEditCover=b64;
+  };img.src=e.target.result;};r.readAsDataURL(f);
+}
 function openEditTazoModal(){
   var t=tazoAlb();if(!t)return;tazoEditCover=null;
   el('tazo-edit-name').value=t.name;
