@@ -971,8 +971,17 @@ function goBack(){
 }
 // ── SECTION NAVIGATION ────────────────────────────────
 function openSection(sec){
-  if(sec==='albums'){renderAlbumCategories();showView('view-albums-list');}
-  else{renderTazosCategories();showView('view-tazos-list');}
+  if(sec==='albums'){
+    renderAlbumCategories();
+    // renderAlbumCategories calls showView internally if single category
+    // Only call showView if there are multiple categories (grid is populated)
+    var grid=el('albums-cat-grid');
+    if(grid&&grid.children.length>0)showView('view-albums-list');
+  } else {
+    renderTazosCategories();
+    var tgrid=el('tazos-cat-grid');
+    if(tgrid&&tgrid.children.length>0)showView('view-tazos-list');
+  }
 }
 function goHome(){
   aid=null;tcid=null;
@@ -986,7 +995,10 @@ function finishAndGoHome(){
   if(a){clearTimeout(_saveTimer);dbSave(a);}
   toast('Guardado');
   setTimeout(function(){
-    renderHome();showView('view-albums-list');
+    renderHome();
+    renderAlbumCategories();
+    if(currentAlbumCat){openAlbumCategory(currentAlbumCat);}
+    else{showView('view-albums-list');}
   },400);
 }
 function _finishAndGoHome_orig(){
@@ -1066,7 +1078,7 @@ function loadAlbums(){
     if(r.error){toast('Error cargando');console.error(r.error);return;}
     albums=(r.data||[]).map(mapAlbum);
     renderHome();
-    renderAlbumCategories();
+    if(typeof renderAlbumCategories==='function')renderAlbumCategories();
     var hashMatch=location.hash.match(/#a=([a-zA-Z0-9-]+)/);
     if(hashMatch&&albums.some(function(a){return a.id===hashMatch[1];})){
       openAlbum(hashMatch[1]);
@@ -1337,17 +1349,7 @@ function switchSection(sec){
 
 // DB
 function mapTazo(t){return{id:t.id,name:t.name,cover:t.cover||null,total:t.total||0,tazos:t.tazos||[],stickers:t.stickers||{}};}
-function loadTazos(){
-  if(!user)return;
-  setSyncing(true);
-  sb.from('tazos').select('*').eq('user_id',user.id).order('created_at').then(function(r){
-    setSyncing(false);
-    if(r.error){toast('Error cargando tazos');return;}
-    tazos=(r.data||[]).map(mapTazo);
-    renderTazosHome();
-    renderTazosCategories();
-  });
-}
+
 function dbSaveTazo(t){
   if(!user||!sb)return;
   setSyncing(true);
