@@ -1171,8 +1171,18 @@ function loadTazos(){
 function dbSaveTazo(t){
   if(!user||!sb)return;
   setSyncing(true);
-  sb.from('tazos').upsert({id:t.id,user_id:user.id,name:t.name,cover:t.cover||null,total:t.total,tazos:t.tazos||[],stickers:t.stickers||{},updated_at:new Date().toISOString()}).then(function(r){setSyncing(false);if(r.error){toast('Error guardando');console.error(r.error);}});
+  var payload={
+    id:t.id,user_id:user.id,name:t.name,total:t.total,
+    tazos:t.tazos||[],stickers:t.stickers||{},
+    updated_at:new Date().toISOString()
+  };
+  if(t.cover)payload.cover=t.cover;
+  sb.from('tazos').upsert(payload).then(function(r){
+    setSyncing(false);
+    if(r.error){toast('Error guardando tazos');console.error(r.error);}
+  });
 }
+
 function dbDeleteTazo(id){if(!user||!sb)return;setSyncing(true);sb.from('tazos').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);});}
 function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTimer=setTimeout(function(){dbSaveTazo(t);},800);}
 function tazoAlb(){return tazosCollections.find(function(t){return t.id===taid;});}
@@ -1483,15 +1493,7 @@ function loadTazos(){
     if(el('home-count'))el('home-count').textContent=ac+(ac===1?' album':' albumes')+' · '+tc2+(tc2===1?' coleccion de tazos':' colecciones de tazos');
   });
 }
-function dbSaveTazo(t){
-  if(!user||!sb)return;
-  setSyncing(true);
-  sb.from('tazos').upsert({
-    id:t.id,user_id:user.id,name:t.name,total:t.total,
-    tazos:t.tazos||[],stickers:t.stickers||{},cover:t.cover||null,
-    updated_at:new Date().toISOString()
-  }).then(function(r){setSyncing(false);if(r.error){toast('Error guardando');console.error(r.error);}});
-}
+
 function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTimer=setTimeout(function(){dbSaveTazo(t);},800);}
 function dbDeleteTazo(id){
   if(!user||!sb)return;
