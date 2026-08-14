@@ -1142,7 +1142,9 @@ function createAlbum(){
   var specialIds=[];
   if(hasEsp){specialIds=fmtSp==='letter'?genIds('letter',0,el('inp-sp-letters').value):genIds('number',parseInt(el('inp-sp-total').value)||0,'','SP');if(!specialIds.length){toast('Agrega los datos de las especiales');return;}}
   var stickers={};specialIds.forEach(function(id){stickers[id]={state:'missing',type:'holo',note:'',qty:0};});
-  var a={id:crypto.randomUUID(),name:name,fmtNormal:fmtN,fmtSpecial:hasEsp?fmtSp:null,normalIds:normalIds,specialIds:specialIds,hasSpecial:hasEsp,defaultSpType:'holo',stickers:stickers,cover:newCover||null};
+  var cat=getSelectedCategory('inp-category','inp-category-new');
+  var a={id:crypto.randomUUID(),name:name,category:cat,fmtNormal:fmtN,fmtSpecial:hasEsp?fmtSp:null,normalIds:normalIds,specialIds:specialIds,hasSpecial:hasEsp,defaultSpType:'holo',stickers:stickers,cover:newCover||null};
+  currentAlbumCat=cat;
   albums.push(a);closeModal('modal-new');dbSave(a);toast('Album creado');openAlbum(a.id);
 }
 
@@ -1387,6 +1389,7 @@ function createTazoCollection(){
   var tazos=Array.from({length:total},function(_,i){return String(i+1);});
   var stickers={};tazos.forEach(function(id){stickers[id]={state:'missing',img:null,qty:0};});
   var t={id:crypto.randomUUID(),name:name,cover:tazoNewCover||null,total:total,tazos:tazos,stickers:stickers};
+  currentTazoCat=tazoCat;
   tazos.push(t);closeModal('modal-new-tazo');
   dbSaveTazo(t);toast('Coleccion creada');openTazoDetail(t.id);
 }
@@ -1680,9 +1683,7 @@ function loadTazos(){
     if(r.error){toast('Error cargando tazos');console.error(r.error);return;}
     tazos=(r.data||[]).map(mapTazo);
     renderTazosHome();
-    // Update home-count
-    var ac=albums.length, tc2=tazos.length;
-    if(el('home-count'))el('home-count').textContent=ac+(ac===1?' album':' albumes')+' · '+tc2+(tc2===1?' coleccion de tazos':' colecciones de tazos');
+    renderTazosCategories();
   });
 }
 
@@ -1748,6 +1749,7 @@ function createTazoCollection(){
   var ids=Array.from({length:total},function(_,i){return String(i+1);});
   var stickers={};ids.forEach(function(id){stickers[id]={state:'missing',img:null};});
   var t={id:crypto.randomUUID(),name:name,total:total,tazos:ids,stickers:stickers,cover:tazoNewCover||null};
+  currentTazoCat=tazoCat;
   tazos.push(t);closeModal('modal-new-tazo');
   dbSaveTazo(t);toast('Coleccion creada');openTazoDetail(t.id);
 }
