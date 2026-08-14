@@ -844,6 +844,8 @@ const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 
 // STATE
 var sb=null,user=null,albums=[],aid=null;
+var ADMIN_ID='a171da52-fa13-4173-84a2-93be63ddaad4';
+function checkAdmin(){if(user&&user.id===ADMIN_ID)el('btn-admin').style.display='inline-flex';}
 var filN='all',filSp='all',vm='grid',albTab='normal';
 var editLam=null,editSec=null,repLam=null,repSec=null;
 var newCover=null,editCover=null,fmtN='number',fmtSp='number',hasEsp=false;
