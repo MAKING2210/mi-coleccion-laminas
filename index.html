@@ -1258,7 +1258,19 @@ function tazoAlb(){return tazos.find(function(t){return t.id===taid;});}
 
 // HOME TAZOS
 function openNewTazoModal(){
-  openNewTazoModalWithPresets();
+  tazoNewCover=null;selectedPreset=null;createTab='preset';
+  if(el('tazo-inp-name'))el('tazo-inp-name').value='';
+  if(el('tazo-inp-total'))el('tazo-inp-total').value='';
+  if(el('tazo-cover-prev'))el('tazo-cover-prev').style.display='none';
+  if(el('tazo-cover-hint'))el('tazo-cover-hint').style.display='block';
+  if(el('tazo-cover-input'))el('tazo-cover-input').value='';
+  if(el('tab-preset'))el('tab-preset').classList.add('sel');
+  if(el('tab-custom'))el('tab-custom').classList.remove('sel');
+  if(el('create-preset-section'))el('create-preset-section').style.display='';
+  if(el('create-custom-section'))el('create-custom-section').style.display='none';
+  if(el('preset-list'))el('preset-list').innerHTML='<div style="text-align:center;padding:1rem;color:var(--muted);font-size:13px">Cargando...</div>';
+  openModal('modal-new-tazo');
+  loadPresets().then(renderPresetList);
 }
 function createTazoCollection(){
   var name=el('tazo-inp-name').value.trim();if(!name){toast('Escribe el nombre');return;}
@@ -1593,7 +1605,19 @@ function tazoStats(t){
 
 // NEW
 function openNewTazoModal(){
-  openNewTazoModalWithPresets();
+  tazoNewCover=null;selectedPreset=null;createTab='preset';
+  if(el('tazo-inp-name'))el('tazo-inp-name').value='';
+  if(el('tazo-inp-total'))el('tazo-inp-total').value='';
+  if(el('tazo-cover-prev'))el('tazo-cover-prev').style.display='none';
+  if(el('tazo-cover-hint'))el('tazo-cover-hint').style.display='block';
+  if(el('tazo-cover-input'))el('tazo-cover-input').value='';
+  if(el('tab-preset'))el('tab-preset').classList.add('sel');
+  if(el('tab-custom'))el('tab-custom').classList.remove('sel');
+  if(el('create-preset-section'))el('create-preset-section').style.display='';
+  if(el('create-custom-section'))el('create-custom-section').style.display='none';
+  if(el('preset-list'))el('preset-list').innerHTML='<div style="text-align:center;padding:1rem;color:var(--muted);font-size:13px">Cargando...</div>';
+  openModal('modal-new-tazo');
+  loadPresets().then(renderPresetList);
 }
 function createTazoCollection(){
   var name=el('tazo-inp-name').value.trim();if(!name){toast('Escribe el nombre');return;}
