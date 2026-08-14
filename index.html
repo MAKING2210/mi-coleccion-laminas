@@ -1144,7 +1144,7 @@ function closeFabMenu(){
 // ═══════════════════════════════════════════════════════
 // TAZOS MODULE
 // ═══════════════════════════════════════════════════════
-var tazosCollections=[], taid=null, tazoFilter='all', _tazoPressTimer=null, _tazoMoved=false, _tazoStartX=0, _tazoStartY=0;
+var taid=null, tazoFilter='all', _tazoPressTimer=null, _tazoMoved=false, _tazoStartX=0, _tazoStartY=0;
 var curTazoImgId=null, curTazoImgB64=null, tazoNewCover=null, tazoEditCover=null;
 
 // SECTION SWITCH
@@ -1164,7 +1164,7 @@ function loadTazos(){
   sb.from('tazos').select('*').eq('user_id',user.id).order('created_at').then(function(r){
     setSyncing(false);
     if(r.error){toast('Error cargando tazos');return;}
-    tazosCollections=(r.data||[]).map(mapTazo);
+    tazos=(r.data||[]).map(mapTazo);
     renderTazosHome();
   });
 }
@@ -1176,7 +1176,6 @@ function dbSaveTazo(t){
     tazos:t.tazos||[],stickers:t.stickers||{},
     updated_at:new Date().toISOString()
   };
-  if(t.cover)payload.cover=t.cover;
   sb.from('tazos').upsert(payload).then(function(r){
     setSyncing(false);
     if(r.error){toast('Error guardando tazos');console.error(r.error);}
@@ -1185,7 +1184,7 @@ function dbSaveTazo(t){
 
 function dbDeleteTazo(id){if(!user||!sb)return;setSyncing(true);sb.from('tazos').delete().eq('id',id).eq('user_id',user.id).then(function(r){setSyncing(false);});}
 function scheduleSaveTazo(t){clearTimeout(_saveTimer);setSyncing(true);_saveTimer=setTimeout(function(){dbSaveTazo(t);},800);}
-function tazoAlb(){return tazosCollections.find(function(t){return t.id===taid;});}
+function tazoAlb(){return tazos.find(function(t){return t.id===taid;});}
 
 // HOME TAZOS
 function openNewTazoModal(){
@@ -1200,7 +1199,7 @@ function createTazoCollection(){
   var tazos=Array.from({length:total},function(_,i){return String(i+1);});
   var stickers={};tazos.forEach(function(id){stickers[id]={state:'missing',img:null,qty:0};});
   var t={id:crypto.randomUUID(),name:name,cover:tazoNewCover||null,total:total,tazos:tazos,stickers:stickers};
-  tazosCollections.push(t);closeModal('modal-new-tazo');
+  tazos.push(t);closeModal('modal-new-tazo');
   dbSaveTazo(t);toast('Coleccion creada');openTazoDetail(t.id);
 }
 
@@ -1349,7 +1348,7 @@ function modTazos(action){
 
 // DELETE
 function openConfirmDeleteTazo(){var t=tazoAlb();if(!t)return;el('del-tazo-msg').textContent='Vas a eliminar "'+t.name+'". Esta accion no se puede deshacer.';openModal('modal-del-tazo');}
-function doDeleteTazo(){dbDeleteTazo(taid);tazosCollections=tazosCollections.filter(function(t){return t.id!==taid;});closeModal('modal-del-tazo');goHome();toast('Coleccion eliminada');}
+function doDeleteTazo(){dbDeleteTazo(taid);tazos=tazos.filter(function(t){return t.id!==taid;});closeModal('modal-del-tazo');goHome();toast('Coleccion eliminada');}
 
 // FINISH
 function finishTazoAndGoHome(){
